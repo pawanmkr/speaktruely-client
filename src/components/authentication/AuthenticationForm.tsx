@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useNavigate } from "react-router-dom";
 
 enum FormType {
   Login,
@@ -15,9 +16,18 @@ type FormData = {
   password: string;
 };
 
+interface User {
+  email: string;
+  fullName: string;
+  token: string;
+  username: string;
+}
+
 const AuthenticationForm: React.FC = () => {
   // state Variable to keep track of which form the user is filling
   const [formType, setFormType] = useState(FormType.Register);
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | undefined>();
 
   const handleFormSwitch = () => {
     setFormType(
@@ -36,8 +46,8 @@ const AuthenticationForm: React.FC = () => {
           username: formData.username,
           password: formData.password,
         })
-        .then((res) => {
-          console.log(res.data);
+        .then((res: AxiosResponse<User, any>) => {
+          setUser(res.data);
         })
         .catch((err: AxiosError) => {
           if (err.response && err.response.status === 404) {
@@ -53,8 +63,8 @@ const AuthenticationForm: React.FC = () => {
             email: formData.email,
             password: formData.password,
           })
-          .then((res) => {
-            console.log(res.data);
+          .then((res: AxiosResponse<User, any>) => {
+            setUser(res.data);
           })
           .catch((err: AxiosError) => {
             if (err.response && err.response.status === 409) {
@@ -64,6 +74,12 @@ const AuthenticationForm: React.FC = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/home", { state: { user } });
+    }
+  }, [user, navigate]);
 
   return (
     <div>
