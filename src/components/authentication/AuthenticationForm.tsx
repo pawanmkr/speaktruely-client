@@ -77,6 +77,7 @@ const AuthenticationForm: React.FC = () => {
 
   useEffect(() => {
     if (user) {
+      localStorage.setItem("jwt", user.token);
       navigate("/home", { state: { user } });
     }
   }, [user, navigate]);

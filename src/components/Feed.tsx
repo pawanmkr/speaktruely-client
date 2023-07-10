@@ -6,17 +6,16 @@ interface PostProps {
 }
 
 const Feed = ({ posts }: PostProps) => {
-  console.log(posts);
   if (!posts) {
     return null;
   }
 
   return (
-    <>
+    <div className="flex flex-col overflow-auto scrollbar-hide">
       {posts.map((post) => {
         return <PostCard key={post.id} {...post} />;
       })}
-    </>
+    </div>
   );
 };
 
