@@ -15,8 +15,8 @@ const Write = ({ publish, handleContentChange }: WriteProps) => {
       <textarea
         name="write"
         id="write"
-        cols="40"
-        rows="10"
+        cols={40}
+        rows={10}
         placeholder="Write..."
         maxLength={300}
         onChange={handleContentChange}

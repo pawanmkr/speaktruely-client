@@ -46,6 +46,8 @@ const Home = () => {
   const [isWriting, setIsWriting] = useState(false);
   const [draftContent, setDraftContent] = useState<string>("");
   const user = location.state as { user: UserProps };
+  console.log(user);
+
   // const { fullName, username, email } = user.user;
   const [posts, setPosts] = useState<Post[] | undefined>();
 

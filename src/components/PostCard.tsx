@@ -2,17 +2,7 @@ import { Post } from "../pages/Home";
 import { FaRegComment, FaShare } from "react-icons/fa";
 import { BiUpvote, BiDownvote } from "react-icons/bi";
 
-const PostCard = ({
-  id,
-  content,
-  images,
-  created_at,
-  full_name,
-  username,
-  reputation,
-  comments,
-  share,
-}: Post) => {
+const PostCard = ({ content, full_name, username, reputation }: Post) => {
   const handleShare = () => {
     console.log("handleShare");
   };
