@@ -1,15 +1,25 @@
 import { MouseEvent } from "react";
+import { Decoded } from "../pages/Home";
 
 type SidebarProps = {
   options: object;
   topics: string[];
+  user: Decoded;
   handleOptionClick: (event: MouseEvent<HTMLButtonElement>) => void;
 };
 
-const Sidebar = ({ options, topics, handleOptionClick }: SidebarProps) => {
+const Sidebar = ({
+  options,
+  topics,
+  user,
+  handleOptionClick,
+}: SidebarProps) => {
   return (
     <div className="ml-4 my-2 w-[180px] text-sublime_yite overflow-hidden">
-      <div className="mb-6 ml-4 mt-4">Logo</div>
+      <div className="ml-4 my-4 mb-8">
+        <p className="text-2xl">{user.fullName}</p>
+        <p>@{user.username}</p>
+      </div>
       <div className="menu mb-6 flex flex-col">
         {Object.entries(options).map(([key, value]) => {
           return (
@@ -17,7 +27,7 @@ const Sidebar = ({ options, topics, handleOptionClick }: SidebarProps) => {
               onClick={handleOptionClick}
               id={key.toLowerCase()}
               key={key.toLowerCase()}
-              className="m-2 text-left flex items-center py-2 px-4 text-xl font-bold hover:bg-sublime_gray w-max rounded-full"
+              className="mb-2 text-left flex items-center py-2 px-4 text-xl font-bold hover:bg-sublime_gray w-max rounded-full"
             >
               <div className="">{value}</div>
               <div className="mx-2">{key}</div>

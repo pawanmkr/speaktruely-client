@@ -14,15 +14,43 @@ const PostCard = ({ id, content, full_name, username, reputation }: Post) => {
     useState<number>(reputation);
   const [voteType, setVoteType] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [jwt, setJwt] = useState<string>("");
+
+  useEffect(() => {
+    const getVoteState = async (id: number, jwt: string) => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_V1_URL as string}/post/vote/state`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwt}`,
+            },
+            params: {
+              postId: id,
+            },
+          }
+        );
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        setVoteType(res.data.type as string);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const token: string | null = localStorage.getItem("jwt");
+    if (token) {
+      setJwt(token);
+      if (id && jwt) {
+        setIsLoading(false);
+        void getVoteState(id, jwt);
+      }
+    }
+  }, [id, jwt]);
 
   const handleVote = async (type: string) => {
     try {
-      const jwt = localStorage.getItem("jwt");
-      if (!jwt) {
-        console.log("User not logged in");
-        return;
-      }
-
       // Check Vote Input type and proceed accordingly
       if (voteType === type) {
         setVoteType("NEUTRAL");
@@ -61,40 +89,6 @@ const PostCard = ({ id, content, full_name, username, reputation }: Post) => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    const getVoteState = async (id: number, jwt: string) => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_V1_URL as string}/post/vote/state`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${jwt}`,
-            },
-            params: {
-              postId: id,
-            },
-          }
-        );
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        setVoteType(res.data.type as string);
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    if (id) {
-      const jwt: string | null = localStorage.getItem("jwt");
-      if (!jwt) {
-        console.log("User not logged in");
-        setIsLoading(false);
-        return;
-      }
-      void getVoteState(id, jwt);
-    }
-  }, [id]);
 
   if (isLoading) {
     return <div>Loading...</div>;

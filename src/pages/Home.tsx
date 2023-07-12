@@ -1,7 +1,6 @@
 import { useEffect, useState, MouseEvent } from "react";
 import Feed from "../components/Feed";
 import axios, { AxiosResponse } from "axios";
-// import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { FaHome, FaWpexplorer } from "react-icons/fa";
 import { MdOutlineSettings } from "react-icons/md";
@@ -10,6 +9,7 @@ import { BiLogOutCircle } from "react-icons/bi";
 import { IoMdCreate } from "react-icons/io";
 import Write from "../components/Write";
 import { useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 
 const options: object = {
   Home: <FaHome />,
@@ -19,12 +19,14 @@ const options: object = {
   Settings: <MdOutlineSettings />,
   Logout: <BiLogOutCircle />,
 };
+
 export type Post = {
   id: number;
   content: string;
   reputation: number;
   full_name: string;
-  username: string;
+  username?: string;
+  created_by?: string;
   created_at: string;
 
   images?: {
@@ -38,25 +40,54 @@ export type Post = {
   share?: string;
 };
 
-/* interface UserProps {
+export interface Decoded {
   fullName: string;
-  username: string;
   email: string;
-} */
+  username: string;
+  iat: number;
+}
 
 const topics: string[] = ["Classroom", "Events", "Cricket", "Hip-Hop"];
 
 const Home = () => {
-  /*   const location = useLocation();
-  const user = location.state as { user: UserProps };
-  console.log(user); */
   const [isWriting, setIsWriting] = useState(false);
   const [draftContent, setDraftContent] = useState<string>("");
   const navigate = useNavigate();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [jwt, setJwt] = useState<string>("");
+  const [user, setUser] = useState<Decoded>();
 
-  // const { fullName, username, email } = user.user;
-  const [posts, setPosts] = useState<Post[] | undefined>();
+  // fetch all posts for the feed
+  useEffect(() => {
+    const fetchPosts = async (jwt: string) => {
+      try {
+        const response: AxiosResponse<Post[]> = await axios.get(
+          `${import.meta.env.VITE_API_V1_URL as string}/post`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwt}`,
+            },
+          }
+        );
+        setPosts(response.data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+    const token: string | null = localStorage.getItem("jwt");
+    if (token === null) navigate("/");
+    else if (token) setJwt(token);
 
+    if (jwt) {
+      setUser(jwt_decode(jwt));
+      void fetchPosts(jwt);
+    }
+  }, [jwt, navigate]);
+
+  /*
+   * Menu option handling...
+   */
   const handleOptionClick = (e: MouseEvent<HTMLButtonElement>): void => {
     switch (e.currentTarget.id) {
       case "write":
@@ -75,6 +106,7 @@ const Home = () => {
     }
   };
 
+  // handle content change for writing post
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (draftContent?.length < 501) {
       setDraftContent(e.target.value);
@@ -83,12 +115,7 @@ const Home = () => {
 
   const publish = async () => {
     try {
-      const jwt: string | null = localStorage.getItem("jwt");
-      if (jwt === null) {
-        console.log("user not logged in");
-        return;
-      }
-      const res: AxiosResponse = await axios.post(
+      const res: AxiosResponse<Post> = await axios.post(
         `${import.meta.env.VITE_API_V1_URL as string}/post`,
         {
           content: draftContent,
@@ -104,34 +131,36 @@ const Home = () => {
         if (res.status === 201) {
           setIsWriting(false);
         }
+        if (res.data) {
+          const decoded: Decoded = jwt_decode(jwt);
+          const newPost: Post = {
+            ...res.data,
+            full_name: decoded.fullName,
+            reputation: 0,
+            username: res.data.created_by,
+          };
+          setPosts((prevPosts) => [newPost, ...prevPosts]);
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  // fetch all posts for the feed
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response: AxiosResponse<Post[]> = await axios.get(
-          `${import.meta.env.VITE_API_V1_URL as string}/post`
-        );
-        setPosts(response.data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
-    void fetchPosts();
-  }, []);
-
   return (
-    <div className="flex w-[80%] h-[100vh]">
-      <Sidebar
-        options={options}
-        topics={topics}
-        handleOptionClick={handleOptionClick}
-      />
+    <div
+      className={`flex h-[100vh] justify-around ${
+        isWriting ? "w-[70%]" : "w-[50%]"
+      }`}
+    >
+      {user && (
+        <Sidebar
+          options={options}
+          topics={topics}
+          user={user}
+          handleOptionClick={handleOptionClick}
+        />
+      )}
       {isWriting && (
         <Write publish={publish} handleContentChange={handleContentChange} />
       )}

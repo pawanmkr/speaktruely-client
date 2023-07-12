@@ -16,18 +16,11 @@ type FormData = {
   password: string;
 };
 
-interface User {
-  email: string;
-  fullName: string;
-  token: string;
-  username: string;
-}
-
 const AuthenticationForm: React.FC = () => {
   // state Variable to keep track of which form the user is filling
   const [formType, setFormType] = useState(FormType.Register);
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | undefined>();
+  const [token, setToken] = useState<string>("");
 
   const handleFormSwitch = () => {
     setFormType(
@@ -46,8 +39,8 @@ const AuthenticationForm: React.FC = () => {
           username: formData.username,
           password: formData.password,
         })
-        .then((res: AxiosResponse<User, any>) => {
-          setUser(res.data);
+        .then((res: AxiosResponse) => {
+          setToken(res.data as string);
         })
         .catch((err: AxiosError) => {
           if (err.response && err.response.status === 404) {
@@ -63,8 +56,8 @@ const AuthenticationForm: React.FC = () => {
             email: formData.email,
             password: formData.password,
           })
-          .then((res: AxiosResponse<User, any>) => {
-            setUser(res.data);
+          .then((res: AxiosResponse) => {
+            setToken(res.data as string);
           })
           .catch((err: AxiosError) => {
             if (err.response && err.response.status === 409) {
@@ -76,11 +69,11 @@ const AuthenticationForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("jwt", user.token);
-      navigate("/home", { state: { user } });
+    if (token) {
+      localStorage.setItem("jwt", token);
+      navigate("/home");
     }
-  }, [user, navigate]);
+  }, [token, navigate]);
 
   return (
     <div className="text-sublime_yite h-[100vh] text-xl">

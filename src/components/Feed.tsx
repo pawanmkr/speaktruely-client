@@ -11,7 +11,7 @@ const Feed = ({ posts }: PostProps) => {
   }
 
   return (
-    <div className="flex flex-col overflow-auto scrollbar-hide">
+    <div className="flex flex-col overflow-auto scrollbar-hide mt-4">
       {posts.map((post) => {
         return <PostCard key={post.id} {...post} />;
       })}
