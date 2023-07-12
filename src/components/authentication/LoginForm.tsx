@@ -28,7 +28,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onFormSwitch, onSubmit }) => {
 
   return (
     <form onSubmit={handleLoginSubmit}>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="username">Username:</label>
         <input
           type="text"
@@ -40,7 +40,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onFormSwitch, onSubmit }) => {
           className="border-2 border-gray-500"
         />
       </div>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="password">Password:</label>
         <input
           type="password"
@@ -53,7 +53,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onFormSwitch, onSubmit }) => {
         />
       </div>
       <button type="submit">Login</button>
-      <button type="button" onClick={onFormSwitch}>
+      <button type="button" onClick={onFormSwitch} className="m-4">
         Switch to Register
       </button>
     </form>

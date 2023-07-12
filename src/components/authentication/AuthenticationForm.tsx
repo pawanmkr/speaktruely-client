@@ -83,8 +83,10 @@ const AuthenticationForm: React.FC = () => {
   }, [user, navigate]);
 
   return (
-    <div>
-      <h2>{formType === FormType.Login ? "Log in" : "Register"}</h2>
+    <div className="text-sublime_yite h-[100vh] text-xl">
+      <h2 className="m-4 font-bold">
+        {formType === FormType.Login ? "Log in" : "Register"}
+      </h2>
       {formType === FormType.Login ? (
         <LoginForm onFormSwitch={handleFormSwitch} onSubmit={handleSubmit} />
       ) : (

@@ -33,7 +33,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
   return (
     <form onSubmit={handleRegisterSubmit}>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="fullName">Full Name:</label>
         <input
           type="text"
@@ -45,7 +45,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           className="border-2 border-gray-500"
         />
       </div>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="email">Email:</label>
         <input
           type="email"
@@ -57,7 +57,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           className="border-2 border-gray-500"
         />
       </div>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="password">Password:</label>
         <input
           type="password"
@@ -70,7 +70,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         />
       </div>
       <button type="submit">Register</button>
-      <button type="button" onClick={onFormSwitch}>
+      <button type="button" onClick={onFormSwitch} className="m-4">
         Switch to Login
       </button>
     </form>

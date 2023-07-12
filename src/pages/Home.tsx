@@ -1,13 +1,15 @@
 import { useEffect, useState, MouseEvent } from "react";
 import Feed from "../components/Feed";
 import axios, { AxiosResponse } from "axios";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { FaHome, FaWpexplorer } from "react-icons/fa";
 import { MdOutlineSettings } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
+import { BiLogOutCircle } from "react-icons/bi";
 import { IoMdCreate } from "react-icons/io";
 import Write from "../components/Write";
+import { useNavigate } from "react-router-dom";
 
 const options: object = {
   Home: <FaHome />,
@@ -15,17 +17,20 @@ const options: object = {
   Explore: <FaWpexplorer />,
   Profile: <CgProfile />,
   Settings: <MdOutlineSettings />,
+  Logout: <BiLogOutCircle />,
 };
 export type Post = {
   id: number;
   content: string;
+  reputation: number;
+  full_name: string;
+  username: string;
+  created_at: string;
+
   images?: {
     url: string;
   }[];
-  created_at: string;
-  full_name: string;
-  username: string;
-  reputation: number;
+
   comments?: {
     comment: string;
     createdAt: string;
@@ -33,20 +38,21 @@ export type Post = {
   share?: string;
 };
 
-interface UserProps {
+/* interface UserProps {
   fullName: string;
   username: string;
   email: string;
-}
+} */
 
 const topics: string[] = ["Classroom", "Events", "Cricket", "Hip-Hop"];
 
 const Home = () => {
-  const location = useLocation();
+  /*   const location = useLocation();
+  const user = location.state as { user: UserProps };
+  console.log(user); */
   const [isWriting, setIsWriting] = useState(false);
   const [draftContent, setDraftContent] = useState<string>("");
-  const user = location.state as { user: UserProps };
-  console.log(user);
+  const navigate = useNavigate();
 
   // const { fullName, username, email } = user.user;
   const [posts, setPosts] = useState<Post[] | undefined>();
@@ -59,6 +65,10 @@ const Home = () => {
         } else {
           setIsWriting(true);
         }
+        break;
+      case "logout":
+        localStorage.removeItem("jwt");
+        navigate("/");
         break;
       default:
         break;
@@ -114,12 +124,6 @@ const Home = () => {
     };
     void fetchPosts();
   }, []);
-
-  useEffect(() => {
-    if (posts) {
-      console.log(posts);
-    }
-  }, [posts]);
 
   return (
     <div className="flex w-[80%] h-[100vh]">
