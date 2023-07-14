@@ -156,12 +156,10 @@ const PostCard = ({
       <div className="reputation-bar h-2 bg-red-300"></div>
 
       <div className="flex items-center justify-between p-2 text-xl">
-        {full_name && username && (
-          <div className="flex items-center">
-            <p className="text-lg">{full_name}</p>
-            <p className="text-sm ml-2">@{username}</p>
-          </div>
-        )}
+        <div className="flex items-center">
+          <p className="text-lg">{fullName}</p>
+          <p className="text-sm ml-2">@{userName}</p>
+        </div>
 
         <div className="flex">
           <div className="flex items-center">
