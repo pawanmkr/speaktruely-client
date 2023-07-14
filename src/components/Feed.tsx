@@ -12,7 +12,7 @@ const Feed = ({ posts }: PostProps) => {
   }
 
   return (
-    <div className="flex flex-col overflow-auto scrollbar-hide mt-4 w-[30%] p-4">
+    <div className="flex flex-col overflow-auto scrollbar-hide mt-4 w-[40%] p-4">
       {(
         <div>
           <InfinitySpin width="200" color="#4fa94d" />
