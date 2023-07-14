@@ -1,6 +1,6 @@
 import { useEffect, useState, MouseEvent } from "react";
 import Feed from "../components/Feed";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import Sidebar from "../components/Sidebar";
 import { FaHome, FaWpexplorer } from "react-icons/fa";
 import { MdOutlineSettings } from "react-icons/md";
