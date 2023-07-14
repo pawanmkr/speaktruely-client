@@ -25,8 +25,6 @@ const PostCard = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [jwt, setJwt] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
-  const [fullName, setFullName] = useState<string>("");
-  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
     const getVoteState = async (id: number, jwt: string) => {
@@ -74,12 +72,7 @@ const PostCard = ({
         void getVoteState(id, jwt);
       }
     }
-
-    if (full_name && username) {
-      setFullName(full_name);
-      setUserName(username);
-    }
-  }, [full_name, id, jwt, media, username]);
+  }, [id, jwt, media]);
 
   const handleVote = async (type: string) => {
     try {
@@ -135,9 +128,15 @@ const PostCard = ({
       <div className="content-body p-2 bg-sublime_blue rounded-t text-sublime_yite">
         {images && (
           <div>
-            <p>{content}</p>
+            <p className="text-xl">{content}</p>
             {images.map((image) => {
-              return <img key={image} src={image} />;
+              return (
+                <img
+                  key={image}
+                  src={image}
+                  className=" mt-2 max-w-full rounded-t"
+                />
+              );
             })}
           </div>
         )}
@@ -157,8 +156,8 @@ const PostCard = ({
 
       <div className="flex items-center justify-between p-2 text-xl">
         <div className="flex items-center">
-          <p className="text-lg">{fullName}</p>
-          <p className="text-sm ml-2">@{userName}</p>
+          <p className="text-lg">{full_name}</p>
+          <p className="text-sm ml-2 cursor-pointer">@{username}</p>
         </div>
 
         <div className="flex">

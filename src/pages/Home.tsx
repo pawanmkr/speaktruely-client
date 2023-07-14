@@ -1,6 +1,6 @@
 import { useEffect, useState, MouseEvent } from "react";
 import Feed from "../components/Feed";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import Sidebar from "../components/Sidebar";
 import { FaHome, FaWpexplorer } from "react-icons/fa";
 import { MdOutlineSettings } from "react-icons/md";
@@ -25,8 +25,7 @@ export type Post = {
   content: string;
   reputation: number;
   full_name: string;
-  username?: string;
-  created_by?: string;
+  username: string;
   created_at: string;
   media?: string;
   comments?: {
@@ -121,6 +120,12 @@ const Home = () => {
 
   const publish = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
+    /*
+     * Add logic to disable pusblish button until content or media
+     * at least one of them is being sent
+     */
+
     const formData = new FormData();
     for (const file of selectedFiles) {
       formData.append("files", file);
@@ -147,7 +152,7 @@ const Home = () => {
             ...res.data,
             full_name: decoded.fullName,
             reputation: 0,
-            username: res.data.created_by,
+            username: res.data.username,
             media: res.data.media,
           };
           setPosts((prevPosts) => [newPost, ...prevPosts]);
@@ -156,6 +161,8 @@ const Home = () => {
     } catch (error) {
       console.log(error);
     }
+    setDraftContent("");
+    setSelectedFiles([]);
   };
 
   return (
