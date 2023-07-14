@@ -25,6 +25,8 @@ const PostCard = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [jwt, setJwt] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
+  const [fullName, setFullName] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
     const getVoteState = async (id: number, jwt: string) => {
@@ -72,7 +74,12 @@ const PostCard = ({
         void getVoteState(id, jwt);
       }
     }
-  }, [id, jwt, media]);
+
+    if (full_name && username) {
+      setFullName(full_name);
+      setUserName(username);
+    }
+  }, [full_name, id, jwt, media, username]);
 
   const handleVote = async (type: string) => {
     try {
@@ -149,10 +156,12 @@ const PostCard = ({
       <div className="reputation-bar h-2 bg-red-300"></div>
 
       <div className="flex items-center justify-between p-2 text-xl">
-        <div className="flex items-center">
-          <p className="text-lg">{full_name}</p>
-          <p className="text-sm ml-2">@{username}</p>
-        </div>
+        {full_name && username && (
+          <div className="flex items-center">
+            <p className="text-lg">{fullName}</p>
+            <p className="text-sm ml-2">@{userName}</p>
+          </div>
+        )}
 
         <div className="flex">
           <div className="flex items-center">
