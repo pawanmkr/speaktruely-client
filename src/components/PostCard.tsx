@@ -8,13 +8,23 @@ import {
   BiSolidDownvote,
 } from "react-icons/bi";
 import axios from "axios";
+import { downloadBlob } from "../utils/azureStorage";
+import { InfinitySpin } from "react-loader-spinner";
 
-const PostCard = ({ id, content, full_name, username, reputation }: Post) => {
+const PostCard = ({
+  id,
+  content,
+  full_name,
+  username,
+  reputation,
+  media,
+}: Post) => {
   const [currentReputation, setCurrentReputation] =
     useState<number>(reputation);
   const [voteType, setVoteType] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [jwt, setJwt] = useState<string>("");
+  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     const getVoteState = async (id: number, jwt: string) => {
@@ -39,6 +49,21 @@ const PostCard = ({ id, content, full_name, username, reputation }: Post) => {
       }
     };
 
+    const fetchImages = async (media: string): Promise<void> => {
+      const fetchedImages: string[] = [];
+      const filenames: string[] = media.split(",");
+      for (const filename of filenames) {
+        const url: string | undefined = await downloadBlob(filename);
+        if (url) {
+          fetchedImages.push(url);
+        }
+      }
+      setImages(fetchedImages);
+    };
+    if (media) {
+      void fetchImages(media);
+    }
+
     const token: string | null = localStorage.getItem("jwt");
     if (token) {
       setJwt(token);
@@ -47,7 +72,7 @@ const PostCard = ({ id, content, full_name, username, reputation }: Post) => {
         void getVoteState(id, jwt);
       }
     }
-  }, [id, jwt]);
+  }, [id, jwt, media]);
 
   const handleVote = async (type: string) => {
     try {
@@ -91,58 +116,79 @@ const PostCard = ({ id, content, full_name, username, reputation }: Post) => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <InfinitySpin width="200" color="#4fa94d" />
+      </div>
+    );
   }
 
-  return (
-    voteType && (
-      <div className="border-2 w-[500px] bg-gray-200 m-4 rounded">
-        <div className="p-2 bg-sublime_blue rounded-t text-sublime_yite">
+  return voteType ? (
+    <div className="border-2 w-[100%] bg-gray-200 mb-8 rounded">
+      <div className="content-body p-2 bg-sublime_blue rounded-t text-sublime_yite">
+        {images && (
+          <div>
+            <p>{content}</p>
+            {images.map((image) => {
+              return <img key={image} src={image} />;
+            })}
+          </div>
+        )}
+        {/*         {images ? (
+          <div>
+            <p>{content}</p>
+            {images.map((image) => {
+              return <img key={image} src={image} />;
+            })}
+          </div>
+        ) : (
           <p>{content}</p>
+        )} */}
+      </div>
+
+      <div className="reputation-bar h-2 bg-red-300"></div>
+
+      <div className="flex items-center justify-between p-2 text-xl">
+        <div className="flex items-center">
+          <p className="text-lg">{full_name}</p>
+          <p className="text-sm ml-2">@{username}</p>
         </div>
 
-        <div className="reputation-bar h-2 bg-red-300"></div>
-
-        <div className="flex items-center justify-between p-2 text-xl">
+        <div className="flex">
           <div className="flex items-center">
-            <p className="text-lg">{full_name}</p>
-            <p className="text-sm ml-2">@{username}</p>
+            <div
+              className={`up cursor-pointer ${
+                voteType === "UPVOTE" ? "text-blue-500" : ""
+              }`}
+              onClick={() => handleVote("UPVOTE")}
+            >
+              {voteType === "UPVOTE" ? <BiSolidUpvote /> : <BiUpvote />}
+            </div>
+            <div className="reputation-count">
+              <p className="mx-2 text-sm">{currentReputation}</p>
+            </div>
+            <div
+              className={`down cursor-pointer ${
+                voteType === "DOWNVOTE" ? "text-red-500" : ""
+              }`}
+              onClick={() => handleVote("DOWNVOTE")}
+            >
+              {voteType === "DOWNVOTE" ? <BiSolidDownvote /> : <BiDownvote />}
+            </div>
           </div>
 
-          <div className="flex">
-            <div className="flex items-center">
-              <div
-                className={`up cursor-pointer ${
-                  voteType === "UPVOTE" ? "text-blue-500" : ""
-                }`}
-                onClick={() => handleVote("UPVOTE")}
-              >
-                {voteType === "UPVOTE" ? <BiSolidUpvote /> : <BiUpvote />}
-              </div>
-              <div className="reputation-count">
-                <p className="mx-2 text-sm">{currentReputation}</p>
-              </div>
-              <div
-                className={`down cursor-pointer ${
-                  voteType === "DOWNVOTE" ? "text-red-500" : ""
-                }`}
-                onClick={() => handleVote("DOWNVOTE")}
-              >
-                {voteType === "DOWNVOTE" ? <BiSolidDownvote /> : <BiDownvote />}
-              </div>
-            </div>
+          <div className="flex items-center mx-6">
+            <FaRegComment />
+          </div>
 
-            <div className="flex items-center mx-6">
-              <FaRegComment />
-            </div>
-
-            <div className="flex items-center">
-              <FaShare />
-            </div>
+          <div className="flex items-center">
+            <FaShare />
           </div>
         </div>
       </div>
-    )
+    </div>
+  ) : (
+    <InfinitySpin width="200" color="#4fa94d" />
   );
 };
 

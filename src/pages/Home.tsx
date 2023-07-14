@@ -28,11 +28,7 @@ export type Post = {
   username?: string;
   created_by?: string;
   created_at: string;
-
-  images?: {
-    url: string;
-  }[];
-
+  media?: string;
   comments?: {
     comment: string;
     createdAt: string;
@@ -56,6 +52,7 @@ const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [jwt, setJwt] = useState<string>("");
   const [user, setUser] = useState<Decoded>();
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   // fetch all posts for the feed
   useEffect(() => {
@@ -113,16 +110,29 @@ const Home = () => {
     }
   };
 
-  const publish = async () => {
+  const handleFileSelection = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    if (!e.target.files) return;
+    const fileList: FileList = e.target.files;
+    const filesArray = Array.from(fileList);
+    setSelectedFiles(filesArray);
+  };
+
+  const publish = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const formData = new FormData();
+    for (const file of selectedFiles) {
+      formData.append("files", file);
+    }
+    formData.append("content", draftContent);
     try {
       const res: AxiosResponse<Post> = await axios.post(
         `${import.meta.env.VITE_API_V1_URL as string}/post`,
-        {
-          content: draftContent,
-        },
+        formData,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipar/form-data",
             Authorization: `Bearer ${jwt}`,
           },
         }
@@ -138,6 +148,7 @@ const Home = () => {
             full_name: decoded.fullName,
             reputation: 0,
             username: res.data.created_by,
+            media: res.data.media,
           };
           setPosts((prevPosts) => [newPost, ...prevPosts]);
         }
@@ -149,8 +160,8 @@ const Home = () => {
 
   return (
     <div
-      className={`flex h-[100vh] justify-around ${
-        isWriting ? "w-[70%]" : "w-[50%]"
+      className={`flex h-[100vh] justify-between ${
+        isWriting ? "w-[1000%]" : "w-[100%]"
       }`}
     >
       {user && (
@@ -162,9 +173,14 @@ const Home = () => {
         />
       )}
       {isWriting && (
-        <Write publish={publish} handleContentChange={handleContentChange} />
+        <Write
+          publish={publish}
+          handleContentChange={handleContentChange}
+          handleFileSelection={handleFileSelection}
+        />
       )}
       {posts && <Feed posts={posts} />}
+      <div className="trends w-[15%]"></div>
     </div>
   );
 };
