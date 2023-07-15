@@ -10,6 +10,8 @@ import {
 import axios from "axios";
 import { downloadBlob } from "../utils/azureStorage";
 import { InfinitySpin } from "react-loader-spinner";
+import { nanoid } from "nanoid";
+import React from "react";
 
 const PostCard = ({
   id,
@@ -25,6 +27,7 @@ const PostCard = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [jwt, setJwt] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
+  const [lines, setLines] = useState<string[]>([]);
 
   useEffect(() => {
     const getVoteState = async (id: number, jwt: string) => {
@@ -72,7 +75,10 @@ const PostCard = ({
         void getVoteState(id, jwt);
       }
     }
-  }, [id, jwt, media]);
+
+    const linesArr: string[] = content.split("\n");
+    setLines(linesArr);
+  }, [content, id, jwt, media]);
 
   const handleVote = async (type: string) => {
     try {
@@ -128,7 +134,16 @@ const PostCard = ({
       <div className="content-body p-2 bg-sublime_blue rounded-t text-sublime_yite">
         {images && (
           <div>
-            <p className="text-xl">{content}</p>
+            <p className="text-xl">
+              {lines.map((line) => {
+                return (
+                  <React.Fragment key={nanoid()}>
+                    <span>{line}</span>
+                    <br />
+                  </React.Fragment>
+                );
+              })}
+            </p>
             {images.map((image) => {
               return (
                 <img
