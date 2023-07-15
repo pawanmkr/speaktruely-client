@@ -52,8 +52,7 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
     };
 
     if (postDetails) {
-      const { id, content, full_name, username, reputation, media } =
-        postDetails;
+      const { id, content, reputation, media } = postDetails;
       setPost(postDetails);
       setCurrentReputation(reputation);
 
