@@ -1,6 +1,7 @@
 import { Post } from "../pages/Home";
 import { useEffect, useState } from "react";
 import { FaRegComment, FaShare } from "react-icons/fa";
+import { TbNeedleThread } from "react-icons/tb";
 import {
   BiUpvote,
   BiDownvote,
@@ -13,16 +14,14 @@ import { InfinitySpin } from "react-loader-spinner";
 import { nanoid } from "nanoid";
 import React from "react";
 
-const PostCard = ({
-  id,
-  content,
-  full_name,
-  username,
-  reputation,
-  media,
-}: Post) => {
-  const [currentReputation, setCurrentReputation] =
-    useState<number>(reputation);
+interface PostcardProps {
+  postDetails: Post;
+  handleCreateThread: () => void;
+}
+
+const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
+  const [post, setPost] = useState<Post>(postDetails);
+  const [currentReputation, setCurrentReputation] = useState<number>(0);
   const [voteType, setVoteType] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [jwt, setJwt] = useState<string>("");
@@ -52,33 +51,40 @@ const PostCard = ({
       }
     };
 
-    const fetchImages = async (media: string): Promise<void> => {
-      const fetchedImages: string[] = [];
-      const filenames: string[] = media.split(",");
-      for (const filename of filenames) {
-        const url: string | undefined = await downloadBlob(filename);
-        if (url) {
-          fetchedImages.push(url);
+    if (postDetails) {
+      const { id, content, full_name, username, reputation, media } =
+        postDetails;
+      setPost(postDetails);
+      setCurrentReputation(reputation);
+
+      const fetchImages = async (media: string): Promise<void> => {
+        const fetchedImages: string[] = [];
+        const filenames: string[] = media.split(",");
+        for (const filename of filenames) {
+          const url: string | undefined = await downloadBlob(filename);
+          if (url) {
+            fetchedImages.push(url);
+          }
+        }
+        setImages(fetchedImages);
+      };
+      if (media) {
+        void fetchImages(media);
+      }
+
+      const token: string | null = localStorage.getItem("jwt");
+      if (token) {
+        setJwt(token);
+        if (id && jwt) {
+          setIsLoading(false);
+          void getVoteState(id, jwt);
         }
       }
-      setImages(fetchedImages);
-    };
-    if (media) {
-      void fetchImages(media);
-    }
 
-    const token: string | null = localStorage.getItem("jwt");
-    if (token) {
-      setJwt(token);
-      if (id && jwt) {
-        setIsLoading(false);
-        void getVoteState(id, jwt);
-      }
+      const linesArr: string[] = content.split("\n");
+      setLines(linesArr);
     }
-
-    const linesArr: string[] = content.split("\n");
-    setLines(linesArr);
-  }, [content, id, jwt, media]);
+  }, [jwt, postDetails]);
 
   const handleVote = async (type: string) => {
     try {
@@ -108,7 +114,7 @@ const PostCard = ({
 
       await axios.post(
         `${import.meta.env.VITE_API_V1_URL as string}/post/vote`,
-        { postId: id, type },
+        { postId: post.id, type },
         {
           headers: {
             "Content-Type": "application/json",
@@ -171,12 +177,12 @@ const PostCard = ({
 
       <div className="flex items-center justify-between p-2 text-xl">
         <div className="flex items-center">
-          <p className="text-lg">{full_name}</p>
-          <p className="text-sm ml-2 cursor-pointer">@{username}</p>
+          <p className="text-lg">{post.full_name}</p>
+          <p className="text-sm ml-2 cursor-pointer">@{post.username}</p>
         </div>
 
-        <div className="flex">
-          <div className="flex items-center">
+        <div className="flex w-[50%] justify-around">
+          <div className="flex items-center justify-around">
             <div
               className={`up cursor-pointer ${
                 voteType === "UPVOTE" ? "text-blue-500" : ""
@@ -198,8 +204,15 @@ const PostCard = ({
             </div>
           </div>
 
-          <div className="flex items-center mx-6">
+          <div className="flex items-center">
             <FaRegComment />
+          </div>
+
+          <div
+            className="thread flex items-center cursor-pointer"
+            onClick={handleCreateThread}
+          >
+            <TbNeedleThread />
           </div>
 
           <div className="flex items-center">

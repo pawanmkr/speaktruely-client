@@ -52,6 +52,8 @@ const Home = () => {
   const [jwt, setJwt] = useState<string>("");
   const [user, setUser] = useState<Decoded>();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [thread, setThread] = useState<number>();
+  const [rows, setRows] = useState<number>(1);
 
   // fetch all posts for the feed
   useEffect(() => {
@@ -102,11 +104,15 @@ const Home = () => {
     }
   };
 
+  const handleWriting = (postId?: number) => {
+    isWriting ? setIsWriting(false) : setIsWriting(true);
+    if (postId) setThread(postId);
+    setRows(5);
+  };
+
   // handle content change for writing post
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (draftContent?.length < 501) {
-      setDraftContent(e.target.value);
-    }
+    if (draftContent?.length < 501) setDraftContent(e.target.value);
   };
 
   const handleFileSelection = (
@@ -120,17 +126,14 @@ const Home = () => {
 
   const publish = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    /*
-     * Add logic to disable pusblish button until content or media
-     * at least one of them is being sent
-     */
-
     const formData = new FormData();
     for (const file of selectedFiles) {
       formData.append("files", file);
     }
     formData.append("content", draftContent);
+    if (thread) {
+      formData.append("thread", thread.toString());
+    }
     try {
       const res: AxiosResponse<Post> = await axios.post(
         `${import.meta.env.VITE_API_V1_URL as string}/post`,
@@ -165,9 +168,15 @@ const Home = () => {
     setSelectedFiles([]);
   };
 
+  const autoResizeTextRow = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const target = e.target as HTMLTextAreaElement;
+    const lines = target.value.split("\n");
+    if (lines.length > 5) setRows(lines.length);
+  };
+
   return (
     <div
-      className={`flex h-[100vh] justify-between ${
+      className={`flex h-[100vh] justify-around ${
         isWriting ? "w-[1000%]" : "w-[100%]"
       }`}
     >
@@ -179,15 +188,31 @@ const Home = () => {
           handleOptionClick={handleOptionClick}
         />
       )}
-      {isWriting && (
-        <Write
-          publish={publish}
-          handleContentChange={handleContentChange}
-          handleFileSelection={handleFileSelection}
+      {posts && <Feed posts={posts} handleWriting={handleWriting} />}
+
+      <div className="post-form flex flex-col mt-8 mr-8 w-[30%]">
+        <textarea
+          name="write"
+          id="write"
+          cols={40}
+          rows={rows}
+          onInput={autoResizeTextRow}
+          onFocus={() => handleWriting()}
+          placeholder="Write..."
+          maxLength={300}
+          value={draftContent}
+          onChange={handleContentChange}
+          className="resize-none rounded p-2 bg-sublime_blue border-none outline-none text-sublime_yite"
         />
-      )}
-      {posts && <Feed posts={posts} />}
-      <div className="trends w-[15%]"></div>
+        {isWriting && (
+          <Write
+            publish={publish}
+            handleFileSelection={handleFileSelection}
+            setIsWriting={setIsWriting}
+            setRows={setRows}
+          />
+        )}
+      </div>
     </div>
   );
 };

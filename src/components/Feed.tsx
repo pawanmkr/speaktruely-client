@@ -4,9 +4,10 @@ import { InfinitySpin } from "react-loader-spinner";
 
 interface PostProps {
   posts: Post[];
+  handleWriting: () => void;
 }
 
-const Feed = ({ posts }: PostProps) => {
+const Feed = ({ posts, handleWriting }: PostProps) => {
   if (!posts) {
     return null;
   }
@@ -19,7 +20,13 @@ const Feed = ({ posts }: PostProps) => {
         </div>
       ) &&
         posts.map((post) => {
-          return <PostCard key={post.id} {...post} />;
+          return (
+            <PostCard
+              key={post.id}
+              postDetails={post}
+              handleCreateThread={handleWriting}
+            />
+          );
         })}
     </div>
   );
