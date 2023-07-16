@@ -16,7 +16,7 @@ import React from "react";
 
 interface PostcardProps {
   postDetails: Post;
-  handleCreateThread: () => void;
+  handleCreateThread(threads: number[], postId: number): void;
 }
 
 const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
@@ -56,9 +56,9 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
       setPost(postDetails);
       setCurrentReputation(reputation);
 
-      const fetchImages = async (media: string): Promise<void> => {
+      const fetchImages = async (media: string[]): Promise<void> => {
         const fetchedImages: string[] = [];
-        const filenames: string[] = media.split(",");
+        const filenames: string[] = media;
         for (const filename of filenames) {
           const url: string | undefined = await downloadBlob(filename);
           if (url) {
@@ -209,9 +209,12 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
 
           <div
             className="thread flex items-center cursor-pointer"
-            onClick={handleCreateThread}
+            onClick={() => handleCreateThread(post.threads, post.id)}
           >
             <TbNeedleThread />
+            <p className="text-sm ml-2">
+              {post.threads ? post.threads.length : ""}
+            </p>
           </div>
 
           <div className="flex items-center">
