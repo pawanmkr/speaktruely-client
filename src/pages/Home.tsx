@@ -25,7 +25,7 @@ export type Post = {
   reputation: number;
   full_name: string;
   username: string;
-  threads: number[];
+  threads: number;
   created_at: string;
   has_threads: boolean;
   media?: string[];
@@ -55,7 +55,7 @@ const Home = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [thread, setThread] = useState<number>();
   const [rows, setRows] = useState<number>(1);
-  const [threadsAvailable, setThreadsAvailable] = useState<number[]>([]);
+  const [showThread, setShowThread] = useState<boolean>(false);
 
   // fetch all posts for the feed
   useEffect(() => {
@@ -105,14 +105,17 @@ const Home = () => {
     }
   };
 
-  const handleWriting = (threads?: number[], postId?: number) => {
-    if (threads && threads.length > 0) {
-      setThreadsAvailable(threads);
-    } else {
+  const handleWriting = (threads: number, postId?: number) => {
+    if (!threads) {
       setIsWriting(true);
       setRows(5);
+      if (showThread) setShowThread(false);
+    } else {
+      setShowThread(true);
     }
-    if (postId) setThread(postId);
+    if (postId) {
+      setThread(postId);
+    }
   };
 
   // handle content change for writing post
@@ -155,15 +158,17 @@ const Home = () => {
           setIsWriting(false);
         }
         if (res.data) {
-          const decoded: Decoded = jwt_decode(jwt);
-          const newPost: Post = {
-            ...res.data,
-            full_name: decoded.fullName,
-            reputation: 0,
-            username: res.data.username,
-            media: res.data.media,
-          };
-          setPosts((prevPosts) => [newPost, ...prevPosts]);
+          if (res.data.thread === null) {
+            const decoded: Decoded = jwt_decode(jwt);
+            const newPost: Post = {
+              ...res.data,
+              full_name: decoded.fullName,
+              reputation: 0,
+              username: res.data.username,
+              media: res.data.media,
+            };
+            setPosts((prevPosts) => [newPost, ...prevPosts]);
+          }
         }
       }
     } catch (error) {
@@ -196,21 +201,21 @@ const Home = () => {
       {posts && <Feed posts={posts} handleWriting={handleWriting} />}
 
       <div className="threads w-[25%] flex flex-col">
-        <div className="post-form flex flex-col mt-8 mr-8">
+        <div className="post-form flex flex-col mt-8 mr-8 w-full">
           <div className="write relative">
-            <IoMdCreate className="absolute text-2xl text-sublime_yite right-2 top-2 opacity-50" />
+            <IoMdCreate className="absolute text-3xl text-sublime_yite right-4 top-4 opacity-50" />
             <textarea
               name="write"
               id="write"
               cols={40}
               rows={rows}
               onInput={autoResizeTextRow}
-              onFocus={() => handleWriting()}
+              onFocus={() => handleWriting(0)}
               placeholder="Write..."
               maxLength={300}
               value={draftContent}
               onChange={handleContentChange}
-              className="resize-none rounded p-2 bg-sublime_blue border-none outline-none text-sublime_yite w-full"
+              className="resize-none rounded p-4 text-xl bg-sublime_blue border-none outline-none text-sublime_yite w-full"
             />
           </div>
           {isWriting && (
@@ -222,7 +227,7 @@ const Home = () => {
             />
           )}
         </div>
-        {threadsAvailable.length > 0 && <Threads threads={threadsAvailable} />}
+        {showThread && thread && <Threads postId={thread} />}
       </div>
     </div>
   );

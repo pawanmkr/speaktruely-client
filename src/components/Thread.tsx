@@ -1,26 +1,24 @@
 import { Post } from "../pages/Home";
 import { useEffect, useState } from "react";
 import { FaRegComment, FaShare } from "react-icons/fa";
-import { TbNeedleThread } from "react-icons/tb";
 import {
   BiUpvote,
   BiDownvote,
   BiSolidUpvote,
   BiSolidDownvote,
 } from "react-icons/bi";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { downloadBlob } from "../utils/azureStorage";
 import { InfinitySpin } from "react-loader-spinner";
 import { nanoid } from "nanoid";
 import React from "react";
 
-interface PostcardProps {
-  postDetails: Post;
-  handleCreateThread: (threads: number, postId?: number) => void;
+interface ThreadProps {
+  threadId: number;
 }
 
-const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
-  const [post, setPost] = useState<Post>(postDetails);
+const Thread = ({ threadId }: ThreadProps) => {
+  const [thread, setThread] = useState<Post>();
   const [currentReputation, setCurrentReputation] = useState<number>(0);
   const [voteType, setVoteType] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -29,6 +27,45 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
   const [lines, setLines] = useState<string[]>([]);
 
   useEffect(() => {
+    const fetchThreadDetails = async (threadId: number, jwt: string) => {
+      try {
+        const res: AxiosResponse<Post> = await axios.get(
+          `${import.meta.env.VITE_API_V1_URL as string}/post/${threadId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwt}`,
+            },
+          }
+        );
+        if (res.data) {
+          setThread(res.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const token: string | null = localStorage.getItem("jwt");
+    if (!token) return;
+    setJwt(token);
+
+    void fetchThreadDetails(threadId, token);
+  }, [threadId]);
+
+  useEffect(() => {
+    const fetchImages = async (media: string[]): Promise<void> => {
+      const fetchedImages: string[] = [];
+      const filenames: string[] = media;
+      for (const filename of filenames) {
+        const url: string | undefined = await downloadBlob(filename);
+        if (url) {
+          fetchedImages.push(url);
+        }
+      }
+      setImages(fetchedImages);
+    };
+
     const getVoteState = async (id: number, jwt: string) => {
       try {
         const res = await axios.get(
@@ -51,41 +88,20 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
       }
     };
 
-    if (postDetails) {
-      const { id, content, reputation, media } = postDetails;
-      setPost(postDetails);
-      setCurrentReputation(reputation);
-
-      const fetchImages = async (media: string[]): Promise<void> => {
-        const fetchedImages: string[] = [];
-        const filenames: string[] = media;
-        for (const filename of filenames) {
-          const url: string | undefined = await downloadBlob(filename);
-          if (url) {
-            fetchedImages.push(url);
-          }
-        }
-        setImages(fetchedImages);
-      };
-      if (media) {
-        void fetchImages(media);
-      }
-
-      const token: string | null = localStorage.getItem("jwt");
-      if (token) {
-        setJwt(token);
-        if (id && jwt) {
-          setIsLoading(false);
-          void getVoteState(id, jwt);
-        }
-      }
-
-      const linesArr: string[] = content.split("\n");
+    if (thread) {
+      setCurrentReputation(thread.reputation);
+      if (thread.media) void fetchImages(thread.media);
+      void getVoteState(threadId, jwt);
+      const linesArr: string[] = thread.content.split("\n");
       setLines(linesArr);
     }
-  }, [jwt, postDetails]);
+  }, [jwt, thread, threadId]);
 
   const handleVote = async (type: string) => {
+    if (!thread) {
+      console.log("Thread Not found");
+      return;
+    }
     try {
       // Check Vote Input type and proceed accordingly
       if (voteType === type) {
@@ -113,7 +129,7 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
 
       await axios.post(
         `${import.meta.env.VITE_API_V1_URL as string}/post/vote`,
-        { postId: post.id, type },
+        { postId: thread.id, type },
         {
           headers: {
             "Content-Type": "application/json",
@@ -134,7 +150,7 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
     );
   }
 
-  return voteType && post ? (
+  return voteType && thread ? (
     <div className="border-2 w-[100%] bg-gray-200 mb-8 rounded">
       <div className="content-body p-2 bg-sublime_blue rounded-t text-sublime_yite">
         {images && (
@@ -166,8 +182,8 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
 
       <div className="flex items-center justify-between p-2 text-xl">
         <div className="flex items-center">
-          <p className="text-lg">{post.full_name}</p>
-          <p className="text-sm ml-2 cursor-pointer">@{post.username}</p>
+          <p className="text-lg">{thread.full_name}</p>
+          <p className="text-sm ml-2 cursor-pointer">@{thread.username}</p>
         </div>
 
         <div className="flex w-[50%] justify-around">
@@ -199,16 +215,6 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
             <FaRegComment />
           </div>
 
-          <div
-            className="thread flex items-center cursor-pointer"
-            onClick={() => {
-              handleCreateThread(post.threads, post.id);
-            }}
-          >
-            <TbNeedleThread />
-            <p className="text-sm ml-2">{post.threads ? post.threads : ""}</p>
-          </div>
-
           <div className="flex items-center">
             <FaShare />
           </div>
@@ -220,4 +226,4 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
   );
 };
 
-export default PostCard;
+export default Thread;
