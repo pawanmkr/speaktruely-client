@@ -20,3 +20,14 @@ export const downloadBlob = async (blobName: string) => {
     return "";
   }
 };
+
+export const fetchImages = async (media: string[]): Promise<string[]> => {
+  const fetchedImages: string[] = [];
+  for (const filename of media) {
+    const url: string | undefined = await downloadBlob(filename);
+    if (url) {
+      fetchedImages.push(url);
+    }
+  }
+  return fetchedImages;
+};
