@@ -17,7 +17,7 @@ const Sidebar = ({
   return (
     <div className="ml-4 my-2 w-[15%] text-sublime_yite overflow-hidden">
       <div className="ml-4 my-4 mb-8">
-        <p className="text-2xl">{user.fullName}</p>
+        <p className="text-2xl">{user.fullname}</p>
         <p>@{user.username}</p>
       </div>
       <div className="menu mb-6 flex flex-col">

@@ -1,4 +1,4 @@
-import { Post } from "../pages/Home";
+import { Post } from "../interface";
 import { useEffect, useState } from "react";
 import { FaRegComment, FaShare } from "react-icons/fa";
 import {
@@ -8,7 +8,7 @@ import {
   BiSolidDownvote,
 } from "react-icons/bi";
 import axios, { AxiosResponse } from "axios";
-import { downloadBlob } from "../utils/azureStorage";
+import { downloadBlob } from "../utils/media";
 import { InfinitySpin } from "react-loader-spinner";
 import { nanoid } from "nanoid";
 import React from "react";
@@ -20,7 +20,7 @@ interface ThreadProps {
 const Thread = ({ threadId }: ThreadProps) => {
   const [thread, setThread] = useState<Post>();
   const [currentReputation, setCurrentReputation] = useState<number>(0);
-  const [voteType, setVoteType] = useState<string>("");
+  const [voteType, setVoteType] = useState<string>("NEUTRAL");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [jwt, setJwt] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
@@ -76,12 +76,14 @@ const Thread = ({ threadId }: ThreadProps) => {
               Authorization: `Bearer ${jwt}`,
             },
             params: {
-              postId: id,
+              post_id: id,
             },
           }
         );
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        setVoteType(res.data.type as string);
+        if (res.data) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          setVoteType(res.data.type as string);
+        }
         setIsLoading(false);
       } catch (error) {
         console.log(error);

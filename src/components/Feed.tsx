@@ -1,11 +1,6 @@
-import { Post } from "../pages/Home";
+import { PostProps } from "../interface";
 import PostCard from "./PostCard";
 import { InfinitySpin } from "react-loader-spinner";
-
-interface PostProps {
-  posts: Post[];
-  handleWriting: (threads: number, postId?: number) => void;
-}
 
 const Feed = ({ posts, handleWriting }: PostProps) => {
   if (!posts) {
