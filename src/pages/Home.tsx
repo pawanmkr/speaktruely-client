@@ -10,6 +10,7 @@ import Write from "../components/Write";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import Threads from "../components/Threads";
+import { Post } from "../interface/post";
 
 const options: object = {
   Home: <FaHome />,
@@ -18,26 +19,9 @@ const options: object = {
   Logout: <BiLogOutCircle />,
 };
 
-export type Post = {
-  id: number;
-  thread?: number;
-  content: string;
-  reputation: number;
-  full_name: string;
-  username: string;
-  threads: number;
-  created_at: string;
-  has_threads: boolean;
-  media?: string[];
-  comments?: {
-    comment: string;
-    createdAt: string;
-  }[];
-  share?: string;
-};
-
 export interface Decoded {
-  fullName: string;
+  userid: number;
+  fullname: string;
   email: string;
   username: string;
   iat: number;
@@ -153,6 +137,7 @@ const Home = () => {
           },
         }
       );
+      console.log(res.data);
       if (res) {
         if (res.status === 201) {
           setIsWriting(false);
@@ -162,7 +147,7 @@ const Home = () => {
             const decoded: Decoded = jwt_decode(jwt);
             const newPost: Post = {
               ...res.data,
-              full_name: decoded.fullName,
+              full_name: decoded.fullname,
               reputation: 0,
               username: res.data.username,
               media: res.data.media,
