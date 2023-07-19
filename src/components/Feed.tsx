@@ -1,6 +1,6 @@
 import { PostProps } from "../interface";
-import PostCard from "./PostCard";
-import Loading from "./Loading";
+import { PostCard } from "./post";
+import { Loading } from "./animations";
 
 const Feed = ({ posts, handleWriting }: PostProps) => {
   if (!posts) {

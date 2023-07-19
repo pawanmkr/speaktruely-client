@@ -2,7 +2,7 @@ import React from "react";
 import { PostContentProps } from "../../interface";
 import { nanoid } from "nanoid";
 
-const PostContent = ({ lines, images }: PostContentProps) => {
+export const PostContent = ({ lines, images }: PostContentProps) => {
   return (
     <div className="">
       <Image images={images} />
@@ -10,8 +10,6 @@ const PostContent = ({ lines, images }: PostContentProps) => {
     </div>
   );
 };
-
-export default PostContent;
 
 const Text = ({ lines }: { lines: string[] }) => {
   return (

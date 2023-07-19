@@ -1,23 +1,16 @@
 import { useEffect, useState, MouseEvent } from "react";
-import Feed from "../components/Feed";
-import axios, { AxiosResponse } from "axios";
-import Sidebar from "../components/Sidebar";
 import { FaHome, FaWpexplorer } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { BiLogOutCircle } from "react-icons/bi";
-import { IoMdCreate } from "react-icons/io";
-import Write from "../components/Write";
 import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
-import Threads from "../components/Threads";
 import { Post } from "../interface/post";
-
-const options: object = {
-  Home: <FaHome />,
-  Explore: <FaWpexplorer />,
-  Profile: <CgProfile />,
-  Logout: <BiLogOutCircle />,
-};
+import { publishPost, handleSidebarOptions, fetchPosts } from "../utils";
+import { IoMdCreate } from "react-icons/io";
+import Feed from "../components/Feed";
+import Sidebar from "../components/Sidebar";
+import { Threads } from "../components/thread";
+import Write from "../components/Write";
+import jwt_decode from "jwt-decode";
 
 export interface Decoded {
   userid: number;
@@ -27,12 +20,19 @@ export interface Decoded {
   iat: number;
 }
 
+const options: object = {
+  Home: <FaHome />,
+  Explore: <FaWpexplorer />,
+  Profile: <CgProfile />,
+  Logout: <BiLogOutCircle />,
+};
+
 const topics: string[] = ["Classroom", "Events", "Cricket", "Hip-Hop"];
 
 const Home = () => {
+  const navigate = useNavigate();
   const [isWriting, setIsWriting] = useState(false);
   const [draftContent, setDraftContent] = useState<string>("");
-  const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
   const [jwt, setJwt] = useState<string>("");
   const [user, setUser] = useState<Decoded>();
@@ -42,52 +42,23 @@ const Home = () => {
   const [showThread, setShowThread] = useState<boolean>(false);
   const [ifPublishing, setIfPublishing] = useState<boolean>(false);
 
-  // fetch all posts for the feed
   useEffect(() => {
-    const fetchPosts = async (jwt: string) => {
-      try {
-        const response: AxiosResponse<Post[]> = await axios.get(
-          `${import.meta.env.VITE_API_V1_URL as string}/post`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${jwt}`,
-            },
-          }
-        );
-        if (response.data.length > 0) {
-          const filteredPost: Post[] = [];
-          response.data.forEach((post: Post) => {
-            if (post.thread === null) filteredPost.push(post);
-          });
-          setPosts(filteredPost);
-        }
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
+    // fetch all posts for the feed
+    const fetchData = async (jwt: string): Promise<void> => {
+      setUser(jwt_decode(jwt));
+      const result: Post[] | undefined = await fetchPosts();
+      result && setPosts(result);
     };
     const token: string | null = localStorage.getItem("jwt");
     if (token === null) navigate("/");
     else if (token) setJwt(token);
 
-    if (jwt) {
-      setUser(jwt_decode(jwt));
-      void fetchPosts(jwt);
-    }
+    jwt && void fetchData(jwt);
   }, [jwt, navigate]);
 
-  /*
-   * Menu option handling...
-   */
   const handleOptionClick = (e: MouseEvent<HTMLButtonElement>): void => {
-    switch (e.currentTarget.id) {
-      case "logout":
-        localStorage.removeItem("jwt");
-        navigate("/");
-        break;
-      default:
-        break;
-    }
+    const elementId: string = e.currentTarget.id;
+    handleSidebarOptions(elementId, navigate);
   };
 
   const handleWriting = (threads: number, postId?: number) => {
@@ -103,8 +74,8 @@ const Home = () => {
     }
   };
 
-  // handle content change for writing post
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // handle content change for writing post
     if (draftContent?.length < 501) setDraftContent(e.target.value);
   };
 
@@ -120,47 +91,18 @@ const Home = () => {
   const publish = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIfPublishing(true);
-    const formData = new FormData();
-    for (const file of selectedFiles) {
-      formData.append("files", file);
-    }
-    formData.append("content", draftContent);
-    if (thread) {
-      formData.append("thread", thread.toString());
-    }
-    try {
-      const res: AxiosResponse<Post> = await axios.post(
-        `${import.meta.env.VITE_API_V1_URL as string}/post`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipar/form-data",
-            Authorization: `Bearer ${jwt}`,
-          },
-        }
-      );
-      if (res) {
-        if (res.status === 201) {
-          setIsWriting(false);
-          setIfPublishing(false);
-          setRows(1);
-        }
-        if (res.data) {
-          if (res.data.thread === null) {
-            const decoded: Decoded = jwt_decode(jwt);
-            const newPost: Post = {
-              ...res.data,
-              full_name: decoded.fullname,
-              reputation: 0,
-              username: res.data.username,
-              media: res.data.media,
-            };
-            setPosts((prevPosts) => [newPost, ...prevPosts]);
-          }
-        }
+    const result: Post | undefined = await publishPost(
+      selectedFiles,
+      draftContent,
+      thread
+    );
+    if (result) {
+      setIsWriting(false);
+      setIfPublishing(false);
+      setRows(1);
+      if (result.thread === null) {
+        setPosts((prevPosts) => [result, ...prevPosts]);
       }
-    } catch (error) {
-      console.log(error);
     }
     setDraftContent("");
     setSelectedFiles([]);

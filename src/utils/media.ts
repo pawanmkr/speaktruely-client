@@ -21,7 +21,9 @@ export const downloadBlob = async (blobName: string) => {
   }
 };
 
-export const fetchImages = async (media: string[]): Promise<string[]> => {
+export const fetchImages = async (
+  media: string[]
+): Promise<string[] | undefined> => {
   const fetchedImages: string[] = [];
   for (const filename of media) {
     const url: string | undefined = await downloadBlob(filename);

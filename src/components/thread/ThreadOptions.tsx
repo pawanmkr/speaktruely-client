@@ -1,30 +1,28 @@
 import { FaRegComment, FaShare } from "react-icons/fa";
-import { TbNeedleThread } from "react-icons/tb";
+import { updatePostVoteStatus } from "../../utils";
+import { ThreadOptionProps } from "../../interface";
 import {
   BiUpvote,
   BiDownvote,
   BiSolidUpvote,
   BiSolidDownvote,
 } from "react-icons/bi";
-import { updatePostVoteStatus } from "../../utils";
-import { PostOptionProps } from "../../interface";
 
-export const PostOptions = ({
-  post,
+export const ThreadOptions = ({
+  thread,
   voteType,
   currentReputation,
   showComments,
   setVoteType,
   setCurrentReputation,
   setShowComments,
-  handleCreateThread,
-}: PostOptionProps) => {
+}: ThreadOptionProps) => {
   const handleVote = async (type: number) => {
     await updatePostVoteStatus(
       type,
       voteType,
       currentReputation,
-      post.id,
+      thread.id,
       setVoteType,
       setCurrentReputation
     );
@@ -33,8 +31,8 @@ export const PostOptions = ({
   return (
     <div className="flex items-center justify-between p-2 text-xl">
       <div className="flex items-center">
-        <p className="text-lg">{post.full_name}</p>
-        <p className="text-sm ml-2 cursor-pointer">@{post.username}</p>
+        <p className="text-lg">{thread.full_name}</p>
+        <p className="text-sm ml-2 cursor-pointer">@{thread.username}</p>
       </div>
 
       <div className="flex w-[50%] justify-around">
@@ -67,16 +65,6 @@ export const PostOptions = ({
           }}
         >
           <FaRegComment />
-        </div>
-
-        <div
-          className="thread flex items-center cursor-pointer"
-          onClick={() => {
-            handleCreateThread(post.threads, post.id);
-          }}
-        >
-          <TbNeedleThread />
-          <p className="text-sm ml-2">{post.threads ? post.threads : ""}</p>
         </div>
 
         <div className="flex items-center">

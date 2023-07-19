@@ -26,10 +26,19 @@ export interface PostcardProps {
   handleCreateThread: (threads: number, postId?: number) => void;
 }
 
+export interface ThreadOptionProps {
+  thread: Post;
+  voteType: number;
+  currentReputation: number;
+  showComments: boolean;
+  setVoteType: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentReputation: React.Dispatch<React.SetStateAction<number>>;
+  setShowComments: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 export interface PostOptionProps {
   post: Post;
   voteType: number;
-  jwt: string;
   currentReputation: number;
   showComments: boolean;
   setVoteType: React.Dispatch<React.SetStateAction<number>>;

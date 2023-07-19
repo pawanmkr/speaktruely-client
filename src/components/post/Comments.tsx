@@ -19,11 +19,9 @@ const Comment = ({ comment }: { comment: CommentInterface }) => {
 const CommentForm = ({
   postId,
   setComments,
-  jwt,
 }: {
   postId: number;
   setComments: Dispatch<SetStateAction<CommentInterface[]>>;
-  jwt: string;
 }) => {
   const [comment, setComment] = useState<string>("");
 
@@ -33,8 +31,7 @@ const CommentForm = ({
     e.preventDefault();
     const res: CommentInterface | undefined = await postComment(
       comment,
-      postId,
-      jwt
+      postId
     );
     if (res) {
       setComments((prevComments) => [res, ...prevComments]);
@@ -58,19 +55,18 @@ const CommentForm = ({
   );
 };
 
-const Comments = ({ postId, jwt }: { postId: number; jwt: string }) => {
+export const Comments = ({ postId }: { postId: number }) => {
   const [comments, setComments] = useState<CommentInterface[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const result: CommentInterface[] | undefined = await fetchComments(
-        postId,
-        jwt
+        postId
       );
       result && setComments(result);
     };
     void fetchData();
-  }, [postId, jwt]);
+  }, [postId]);
 
   return (
     <div className="px-2 border-light_gray border-t-[1px]">
@@ -78,9 +74,7 @@ const Comments = ({ postId, jwt }: { postId: number; jwt: string }) => {
         comments.map((comment) => {
           return <Comment comment={comment} key={comment.id} />;
         })}
-      <CommentForm postId={postId} setComments={setComments} jwt={jwt} />
+      <CommentForm postId={postId} setComments={setComments} />
     </div>
   );
 };
-
-export default Comments;

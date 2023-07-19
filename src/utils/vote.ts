@@ -1,5 +1,8 @@
 import axios from "axios";
 
+const jwt: string | null = localStorage.getItem("jwt");
+if (!jwt) throw new Error("Jwt not found");
+
 /*
  *  1: UPVOTE
  *  0: NEUTRAL
@@ -7,8 +10,7 @@ import axios from "axios";
  */
 
 export const getVoteState = async (
-  id: number,
-  jwt: string
+  postId: number
 ): Promise<number | undefined> => {
   try {
     const res = await axios.get(
@@ -19,7 +21,7 @@ export const getVoteState = async (
           Authorization: `Bearer ${jwt}`,
         },
         params: {
-          post_id: id,
+          post_id: postId,
         },
       }
     );
@@ -35,7 +37,6 @@ export const updatePostVoteStatus = async (
   voteType: number,
   currentReputation: number,
   postId: number,
-  jwt: string,
   setVoteType: React.Dispatch<React.SetStateAction<number>>,
   setCurrentReputation: React.Dispatch<React.SetStateAction<number>>
 ) => {

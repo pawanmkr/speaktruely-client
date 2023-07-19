@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import Loading from "./Loading";
+import { Loading } from "./animations";
 
 interface WriteProps {
   publish: (e: React.MouseEvent<HTMLButtonElement>) => void;
