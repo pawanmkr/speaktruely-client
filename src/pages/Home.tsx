@@ -40,6 +40,7 @@ const Home = () => {
   const [thread, setThread] = useState<number>();
   const [rows, setRows] = useState<number>(1);
   const [showThread, setShowThread] = useState<boolean>(false);
+  const [ifPublishing, setIfPublishing] = useState<boolean>(false);
 
   // fetch all posts for the feed
   useEffect(() => {
@@ -118,6 +119,7 @@ const Home = () => {
 
   const publish = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setIfPublishing(true);
     const formData = new FormData();
     for (const file of selectedFiles) {
       formData.append("files", file);
@@ -137,10 +139,11 @@ const Home = () => {
           },
         }
       );
-      console.log(res.data);
       if (res) {
         if (res.status === 201) {
           setIsWriting(false);
+          setIfPublishing(false);
+          setRows(1);
         }
         if (res.data) {
           if (res.data.thread === null) {
@@ -202,6 +205,7 @@ const Home = () => {
           {isWriting && (
             <Write
               publish={publish}
+              ifPublishing={ifPublishing}
               handleFileSelection={handleFileSelection}
               setIsWriting={setIsWriting}
               setRows={setRows}

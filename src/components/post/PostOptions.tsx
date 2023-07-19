@@ -6,7 +6,6 @@ import {
   BiSolidUpvote,
   BiSolidDownvote,
 } from "react-icons/bi";
-import { VoteType } from "../PostCard";
 import { updatePostVoteStatus } from "../../utils";
 import { PostOptionProps } from "../../interface";
 
@@ -21,7 +20,7 @@ const PostOptions = ({
   setShowComments,
   handleCreateThread,
 }: PostOptionProps) => {
-  const handleVote = async (type: VoteType) => {
+  const handleVote = async (type: number) => {
     await updatePostVoteStatus(
       type,
       voteType,
@@ -44,26 +43,22 @@ const PostOptions = ({
         <div className="flex items-center justify-around">
           <div
             className={`up cursor-pointer ${
-              voteType === VoteType.upvote ? "text-blue-500" : ""
+              voteType === 1 ? "text-blue-500" : ""
             }`}
-            onClick={() => handleVote(VoteType.upvote)}
+            onClick={() => handleVote(1)}
           >
-            {voteType === VoteType.upvote ? <BiSolidUpvote /> : <BiUpvote />}
+            {voteType === 1 ? <BiSolidUpvote /> : <BiUpvote />}
           </div>
           <div className="reputation-count">
             <p className="mx-2 text-sm">{currentReputation}</p>
           </div>
           <div
             className={`down cursor-pointer ${
-              voteType === VoteType.downvote ? "text-red-500" : ""
+              voteType === -1 ? "text-red-500" : ""
             }`}
-            onClick={() => handleVote(VoteType.downvote)}
+            onClick={() => handleVote(-1)}
           >
-            {voteType === VoteType.downvote ? (
-              <BiSolidDownvote />
-            ) : (
-              <BiDownvote />
-            )}
+            {voteType === -1 ? <BiSolidDownvote /> : <BiDownvote />}
           </div>
         </div>
 

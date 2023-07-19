@@ -1,6 +1,6 @@
 import { PostProps } from "../interface";
 import PostCard from "./PostCard";
-import { InfinitySpin } from "react-loader-spinner";
+import Loading from "./Loading";
 
 const Feed = ({ posts, handleWriting }: PostProps) => {
   if (!posts) {
@@ -9,11 +9,7 @@ const Feed = ({ posts, handleWriting }: PostProps) => {
 
   return (
     <div className="flex flex-col items-center  overflow-auto scrollbar-hide mt-4 w-[50%] p-4">
-      {(
-        <div>
-          <InfinitySpin width="200" color="#4fa94d" />
-        </div>
-      ) &&
+      {<Loading /> &&
         posts.map((post) => {
           return (
             <PostCard
