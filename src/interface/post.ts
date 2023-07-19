@@ -33,7 +33,22 @@ export interface PostOptionProps {
   voteType: VoteType;
   jwt: string;
   currentReputation: number;
+  showComments: boolean;
   setVoteType: React.Dispatch<React.SetStateAction<VoteType>>;
   setCurrentReputation: React.Dispatch<React.SetStateAction<number>>;
+  setShowComments: React.Dispatch<React.SetStateAction<boolean>>;
   handleCreateThread: (threads: number, postId?: number) => void;
+}
+
+export interface PostContentProps {
+  lines: string[];
+  images: string[];
+}
+
+export interface Comment {
+  id: number;
+  comment: string;
+  date: string;
+  userid: number;
+  username: string;
 }

@@ -9,7 +9,8 @@ export const theme = {
       sublime_darkblue: '#22262A',
       sublime_blue: '#313841',
       sublime_yite: '#D8DEE9',
-      sublime_gray: '#4F565E'
+      sublime_gray: '#4F565E',
+      light_gray: '#858B95'
     }
   },
 };
