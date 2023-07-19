@@ -1,5 +1,3 @@
-import { VoteType } from "../components/PostCard";
-
 export type Post = {
   id: number;
   thread?: number;
@@ -30,11 +28,11 @@ export interface PostcardProps {
 
 export interface PostOptionProps {
   post: Post;
-  voteType: VoteType;
+  voteType: number;
   jwt: string;
   currentReputation: number;
   showComments: boolean;
-  setVoteType: React.Dispatch<React.SetStateAction<VoteType>>;
+  setVoteType: React.Dispatch<React.SetStateAction<number>>;
   setCurrentReputation: React.Dispatch<React.SetStateAction<number>>;
   setShowComments: React.Dispatch<React.SetStateAction<boolean>>;
   handleCreateThread: (threads: number, postId?: number) => void;

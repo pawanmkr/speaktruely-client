@@ -1,7 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
+import Loading from "./Loading";
 
 interface WriteProps {
   publish: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  ifPublishing: boolean;
   handleFileSelection: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setIsWriting: Dispatch<SetStateAction<boolean>>;
   setRows: Dispatch<SetStateAction<number>>;
@@ -10,6 +12,7 @@ interface WriteProps {
 const Write = ({
   handleFileSelection,
   publish,
+  ifPublishing,
   setIsWriting,
   setRows,
 }: WriteProps) => {
@@ -39,7 +42,7 @@ const Write = ({
         onClick={publish}
         className="py-2 rounded text-xl text-sublime_yite bg-sublime_gray"
       >
-        Publish
+        {ifPublishing ? <Loading /> : "Publish"}
       </button>
     </form>
   );

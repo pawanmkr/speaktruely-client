@@ -1,10 +1,15 @@
 import axios from "axios";
-import { VoteType } from "../components/PostCard";
+
+/*
+ *  1: UPVOTE
+ *  0: NEUTRAL
+ * -1: DOWNVOTE
+ */
 
 export const getVoteState = async (
   id: number,
   jwt: string
-): Promise<string | undefined> => {
+): Promise<number | undefined> => {
   try {
     const res = await axios.get(
       `${import.meta.env.VITE_API_V1_URL as string}/post/vote/state`,
@@ -19,47 +24,47 @@ export const getVoteState = async (
       }
     );
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    return res.data.type as string;
+    return res.data.type as number;
   } catch (error) {
     console.log(error);
   }
 };
 
 export const updatePostVoteStatus = async (
-  type: VoteType,
-  voteType: VoteType,
+  type: number,
+  voteType: number,
   currentReputation: number,
   postId: number,
   jwt: string,
-  setVoteType: React.Dispatch<React.SetStateAction<VoteType>>,
+  setVoteType: React.Dispatch<React.SetStateAction<number>>,
   setCurrentReputation: React.Dispatch<React.SetStateAction<number>>
 ) => {
   try {
-    if (voteType === VoteType.neutral) {
+    if (voteType === 0) {
       // incase user hasn't voted already
       setVoteType(type);
-      if (type === VoteType.upvote) {
+      if (type === 1) {
         setCurrentReputation(Number(currentReputation) + 1);
-      } else if (type === VoteType.downvote) {
+      } else if (type === -1) {
         setCurrentReputation(Number(currentReputation) - 1);
       }
-    } else if (voteType === VoteType.upvote) {
-      if (type === VoteType.upvote) {
+    } else if (voteType === 1) {
+      if (type === 1) {
         // when user wants to take back his upvote
-        setVoteType(VoteType.neutral);
+        setVoteType(0);
         const value: number = Number(currentReputation) - 1;
         setCurrentReputation(value);
-      } else if (type === VoteType.downvote) {
+      } else if (type === -1) {
         // when user wants to take back his upvote and do the downvote
         setVoteType(type);
         setCurrentReputation(Number(currentReputation) - 2);
       }
-    } else if (voteType === VoteType.downvote) {
-      if (type === VoteType.upvote) {
+    } else if (voteType === -1) {
+      if (type === 1) {
         setVoteType(type);
         setCurrentReputation(Number(currentReputation) + 2);
-      } else if (type === VoteType.downvote) {
-        setVoteType(VoteType.neutral);
+      } else if (type === -1) {
+        setVoteType(0);
         setCurrentReputation(Number(currentReputation) + 1);
       }
     }

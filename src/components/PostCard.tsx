@@ -5,20 +5,12 @@ import { Post, PostOptionProps, PostcardProps } from "../interface";
 import PostOptions from "./post/PostOptions";
 import PostContent from "./post/PostContent";
 import Comments from "./post/Comments";
-
-export enum VoteType {
-  upvote,
-  "UPVOTE",
-  downvote,
-  "DOWNVOTE",
-  neutral,
-  "NEUTRAL",
-}
+import Loading from "./Loading";
 
 const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
   const [post, setPost] = useState<Post>(postDetails);
   const [currentReputation, setCurrentReputation] = useState<number>(0);
-  const [voteType, setVoteType] = useState<VoteType>(VoteType.neutral);
+  const [voteType, setVoteType] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [jwt, setJwt] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
@@ -39,11 +31,11 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
         if (token) {
           setJwt(token);
           if (id && jwt) {
-            const type: string | undefined = await getVoteState(id, jwt);
-            if (type === "UPVOTE") {
-              setVoteType(VoteType.upvote);
-            } else if (type === "DOWNVOTE") {
-              setVoteType(VoteType.downvote);
+            const type: number | undefined = await getVoteState(id, jwt);
+            if (type === 1) {
+              setVoteType(1);
+            } else if (type === -1) {
+              setVoteType(-1);
             }
             setIsLoading(false);
           }
@@ -68,16 +60,12 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
   };
 
   if (isLoading) {
-    return (
-      <div>
-        <InfinitySpin width="200" color="#4fa94d" />
-      </div>
-    );
+    return <Loading />;
   }
 
   return postOptionProps ? (
     <div className="border-4 w-[70%] bg-gray-200 mb-8 rounded">
-      <PostContent lines={lines} images={images} />
+      {images && lines && <PostContent lines={lines} images={images} />}
 
       <div className="reputation-bar h-2 bg-red-300"></div>
 
