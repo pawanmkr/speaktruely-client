@@ -36,7 +36,7 @@ const Threads = ({ postId }: ThreadProps) => {
   }, [postId, jwt]);
 
   return (
-    <div className="mt-4 overflow-auto scrollbar-hide">
+    <div className="mt-6 overflow-auto scrollbar-hide w-[80%]">
       {threadIds !== undefined &&
         threadIds.map((threadId) => (
           <Thread key={threadId} threadId={threadId} />

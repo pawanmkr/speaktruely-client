@@ -170,11 +170,7 @@ const Home = () => {
   };
 
   return (
-    <div
-      className={`flex h-[100vh] justify-around ${
-        isWriting ? "w-[1000%]" : "w-[100%]"
-      }`}
-    >
+    <div className={`flex h-[100vh] justify-around`}>
       {user && (
         <Sidebar
           options={options}
@@ -185,9 +181,9 @@ const Home = () => {
       )}
       {posts && <Feed posts={posts} handleWriting={handleWriting} />}
 
-      <div className="threads w-[25%] flex flex-col">
-        <div className="post-form flex flex-col mt-8 mr-8 w-full">
-          <div className="write relative">
+      <div className="threads w-[35%] flex flex-col items-center">
+        <div className="post-form flex flex-col mt-8 mr-8 w-[80%]">
+          <div className="write relative left-4">
             <IoMdCreate className="absolute text-3xl text-sublime_yite right-4 top-4 opacity-50" />
             <textarea
               name="write"

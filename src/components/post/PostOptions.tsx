@@ -15,8 +15,10 @@ const PostOptions = ({
   voteType,
   currentReputation,
   jwt,
+  showComments,
   setVoteType,
   setCurrentReputation,
+  setShowComments,
   handleCreateThread,
 }: PostOptionProps) => {
   const handleVote = async (type: VoteType) => {
@@ -65,7 +67,12 @@ const PostOptions = ({
           </div>
         </div>
 
-        <div className="flex items-center">
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => {
+            showComments ? setShowComments(false) : setShowComments(true);
+          }}
+        >
           <FaRegComment />
         </div>
 

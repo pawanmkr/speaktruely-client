@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { InfinitySpin } from "react-loader-spinner";
-import { nanoid } from "nanoid";
 import { fetchImages, getVoteState } from "../utils/index";
-import React from "react";
 import { Post, PostOptionProps, PostcardProps } from "../interface";
 import PostOptions from "./post/PostOptions";
+import PostContent from "./post/PostContent";
+import Comments from "./post/Comments";
 
 export enum VoteType {
   upvote,
@@ -23,6 +23,7 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
   const [jwt, setJwt] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
   const [lines, setLines] = useState<string[]>([]);
+  const [showComments, setShowComments] = useState<boolean>(false);
 
   useEffect(() => {
     if (postDetails) {
@@ -59,8 +60,10 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
     voteType,
     jwt,
     currentReputation,
+    showComments,
     setVoteType,
     setCurrentReputation,
+    setShowComments,
     handleCreateThread,
   };
 
@@ -73,36 +76,13 @@ const PostCard = ({ postDetails, handleCreateThread }: PostcardProps) => {
   }
 
   return postOptionProps ? (
-    <div className="border-2 w-[100%] bg-gray-200 mb-8 rounded">
-      <div className="content-body p-2 bg-sublime_blue rounded-t text-sublime_yite">
-        {images && (
-          <div>
-            <p className="text-xl">
-              {lines.map((line) => {
-                return (
-                  <React.Fragment key={nanoid()}>
-                    <span>{line}</span>
-                    <br />
-                  </React.Fragment>
-                );
-              })}
-            </p>
-            {images.map((image) => {
-              return (
-                <img
-                  key={image}
-                  src={image}
-                  className=" mt-2 max-w-full rounded-t"
-                />
-              );
-            })}
-          </div>
-        )}
-      </div>
+    <div className="border-4 w-[70%] bg-gray-200 mb-8 rounded">
+      <PostContent lines={lines} images={images} />
 
       <div className="reputation-bar h-2 bg-red-300"></div>
 
       <PostOptions {...postOptionProps} />
+      {showComments && <Comments postId={post.id} jwt={jwt} />}
     </div>
   ) : (
     <InfinitySpin width="500" color="#4fa94d" />
