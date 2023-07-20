@@ -20,11 +20,10 @@ export const Authentication = () => {
         password: formData.get("password"),
         fullname: formData.get("full-name"),
       };
-      console.log(data);
       const result: string | number = await userRegistrationAndLogin(data);
       if (typeof result === "string") {
         localStorage.setItem("jwt", result);
-        navigate("/");
+        window.location.reload();
       } else if (result === 409) {
         console.log("Email Alread Exists");
       } else if (result === 404) {
