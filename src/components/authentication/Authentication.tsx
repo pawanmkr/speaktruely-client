@@ -1,13 +1,11 @@
 import { FormEvent, useRef, useState } from "react";
 import { userRegistrationAndLogin } from "../../utils";
-import { useNavigate } from "react-router-dom";
 import { UserForm } from "../../interface";
 
 export const Authentication = () => {
   const [isRegisterForm, setIsRegisterForm] = useState(false);
   const [isLostPasswordForm, setIsLostPasswordForm] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
-  const navigate = useNavigate();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
