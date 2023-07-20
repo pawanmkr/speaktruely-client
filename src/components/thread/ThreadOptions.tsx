@@ -16,16 +16,20 @@ export const ThreadOptions = ({
   setVoteType,
   setCurrentReputation,
   setShowComments,
+  setShowRegister,
+  jwt,
 }: ThreadOptionProps) => {
   const handleVote = async (type: number) => {
-    await updatePostVoteStatus(
-      type,
-      voteType,
-      currentReputation,
-      thread.id,
-      setVoteType,
-      setCurrentReputation
-    );
+    jwt
+      ? await updatePostVoteStatus(
+          type,
+          voteType,
+          currentReputation,
+          thread.id,
+          setVoteType,
+          setCurrentReputation
+        )
+      : setShowRegister(true);
   };
 
   return (

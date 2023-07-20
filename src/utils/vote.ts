@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const jwt: string | null = localStorage.getItem("jwt");
-if (!jwt) throw new Error("Jwt not found");
 
 /*
  *  1: UPVOTE
@@ -12,6 +11,7 @@ if (!jwt) throw new Error("Jwt not found");
 export const getVoteState = async (
   postId: number
 ): Promise<number | undefined> => {
+  if (!jwt) throw new Error("Jwt not found");
   try {
     const res = await axios.get(
       `${import.meta.env.VITE_API_V1_URL as string}/post/vote/state`,
@@ -40,6 +40,7 @@ export const updatePostVoteStatus = async (
   setVoteType: React.Dispatch<React.SetStateAction<number>>,
   setCurrentReputation: React.Dispatch<React.SetStateAction<number>>
 ) => {
+  if (!jwt) throw new Error("Jwt not found");
   try {
     if (voteType === 0) {
       // incase user hasn't voted already

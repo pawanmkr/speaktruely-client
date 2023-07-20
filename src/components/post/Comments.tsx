@@ -19,9 +19,13 @@ const Comment = ({ comment }: { comment: CommentInterface }) => {
 const CommentForm = ({
   postId,
   setComments,
+  setShowRegister,
+  jwt,
 }: {
   postId: number;
   setComments: Dispatch<SetStateAction<CommentInterface[]>>;
+  setShowRegister: React.Dispatch<React.SetStateAction<boolean>>;
+  jwt: string;
 }) => {
   const [comment, setComment] = useState<string>("");
 
@@ -49,13 +53,27 @@ const CommentForm = ({
         />
       </div>
       <div className="w-[15%] flex items-center justify-center bg-white text-xl">
-        <button onClick={handleCommentSubmit}>Post</button>
+        <button
+          onClick={() => {
+            jwt ? handleCommentSubmit : setShowRegister(true);
+          }}
+        >
+          Post
+        </button>
       </div>
     </div>
   );
 };
 
-export const Comments = ({ postId }: { postId: number }) => {
+export const Comments = ({
+  postId,
+  setShowRegister,
+  jwt,
+}: {
+  postId: number;
+  setShowRegister: React.Dispatch<React.SetStateAction<boolean>>;
+  jwt: string;
+}) => {
   const [comments, setComments] = useState<CommentInterface[]>([]);
 
   useEffect(() => {
@@ -74,7 +92,12 @@ export const Comments = ({ postId }: { postId: number }) => {
         comments.map((comment) => {
           return <Comment comment={comment} key={comment.id} />;
         })}
-      <CommentForm postId={postId} setComments={setComments} />
+      <CommentForm
+        postId={postId}
+        setComments={setComments}
+        setShowRegister={setShowRegister}
+        jwt={jwt}
+      />
     </div>
   );
 };

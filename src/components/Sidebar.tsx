@@ -4,7 +4,7 @@ import { Decoded } from "../pages/Home";
 type SidebarProps = {
   options: object;
   topics: string[];
-  user: Decoded;
+  user: Decoded | undefined;
   handleOptionClick: (event: MouseEvent<HTMLButtonElement>) => void;
 };
 
@@ -17,22 +17,25 @@ const Sidebar = ({
   return (
     <div className="ml-4 my-2 w-[15%] text-sublime_yite overflow-hidden flex flex-col items-center">
       <div className="ml-4 my-4 mb-8">
-        <p className="text-2xl">{user.fullname}</p>
-        <p>@{user.username}</p>
+        <p className="text-2xl">{user ? user.fullname : "Pawan Kumar"}</p>
+        <p>@{user ? user.username : "stranger"}</p>
       </div>
       <div className="menu mb-6 flex flex-col text-2xl">
         {Object.entries(options).map(([key, value]) => {
-          return (
-            <button
-              onClick={handleOptionClick}
-              id={key.toLowerCase()}
-              key={key.toLowerCase()}
-              className="mb-2 text-left flex items-center py-2 px-4 font-bold hover:bg-sublime_gray w-max rounded-full"
-            >
-              <div className="">{value}</div>
-              <div className="mx-2">{key}</div>
-            </button>
-          );
+          if ((!user && key === "Logout") || key === "Profile") return null;
+          else {
+            return (
+              <button
+                onClick={handleOptionClick}
+                id={key.toLowerCase()}
+                key={key.toLowerCase()}
+                className="mb-2 text-left flex items-center py-2 px-4 font-bold hover:bg-sublime_gray w-max rounded-full"
+              >
+                <div className="">{value}</div>
+                <div className="mx-2">{key}</div>
+              </button>
+            );
+          }
         })}
       </div>
       <div className="topic flex flex-col p-2 text-2xl truncate">

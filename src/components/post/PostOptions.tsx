@@ -18,16 +18,20 @@ export const PostOptions = ({
   setCurrentReputation,
   setShowComments,
   handleCreateThread,
+  setShowRegister,
+  jwt,
 }: PostOptionProps) => {
   const handleVote = async (type: number) => {
-    await updatePostVoteStatus(
-      type,
-      voteType,
-      currentReputation,
-      post.id,
-      setVoteType,
-      setCurrentReputation
-    );
+    jwt
+      ? await updatePostVoteStatus(
+          type,
+          voteType,
+          currentReputation,
+          post.id,
+          setVoteType,
+          setCurrentReputation
+        )
+      : setShowRegister(true);
   };
 
   return (

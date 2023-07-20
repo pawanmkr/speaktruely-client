@@ -1,9 +1,17 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Thread } from ".";
 import { Post as ThreadInterface } from "../../interface";
 import { fetchThreads } from "../../utils/thread";
 
-export const Threads = ({ postId }: { postId: number }) => {
+export const Threads = ({
+  postId,
+  jwt,
+  setShowRegister,
+}: {
+  postId: number;
+  jwt: string;
+  setShowRegister: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [threads, setThreads] = useState<ThreadInterface[]>();
 
   useEffect(() => {
@@ -20,7 +28,14 @@ export const Threads = ({ postId }: { postId: number }) => {
   return (
     <div className="mt-6 overflow-auto scrollbar-hide flex flex-col items-center w-[80%]">
       {threads &&
-        threads.map((thread) => <Thread key={thread.id} thread={thread} />)}
+        threads.map((thread) => (
+          <Thread
+            key={thread.id}
+            thread={thread}
+            jwt={jwt}
+            setShowRegister={setShowRegister}
+          />
+        ))}
     </div>
   );
 };

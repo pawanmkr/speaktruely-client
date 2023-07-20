@@ -2,7 +2,6 @@ import axios, { AxiosResponse } from "axios";
 import { Comment, Post } from "../interface";
 
 const jwt: string | null = localStorage.getItem("jwt");
-if (!jwt) throw new Error("Jwt not found");
 
 export const fetchPosts = async (): Promise<Post[] | undefined> => {
   try {
@@ -11,7 +10,6 @@ export const fetchPosts = async (): Promise<Post[] | undefined> => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${jwt}`,
         },
       }
     );
@@ -32,6 +30,7 @@ export const publishPost = async (
   draftContent: string,
   thread?: number
 ) => {
+  if (!jwt) throw new Error("Jwt not found");
   const formData = new FormData();
   for (const file of selectedFiles) {
     formData.append("files", file);
@@ -66,7 +65,6 @@ export const fetchComments = async (
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${jwt}`,
         },
         params: {
           post_id: postId,
@@ -83,6 +81,7 @@ export const postComment = async (
   comment: string,
   postId: number
 ): Promise<Comment | undefined> => {
+  if (!jwt) throw new Error("Jwt not found");
   try {
     const res: AxiosResponse<Comment> = await axios.post(
       `${import.meta.env.VITE_API_V1_URL as string}/post/comment`,

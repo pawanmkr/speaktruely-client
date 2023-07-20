@@ -3,7 +3,7 @@ import { FaHome, FaWpexplorer } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { BiLogOutCircle } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
-import { Post } from "../interface/post";
+import { Post } from "../interface";
 import { publishPost, handleSidebarOptions, fetchPosts } from "../utils";
 import { IoMdCreate } from "react-icons/io";
 import Feed from "../components/Feed";
@@ -11,6 +11,7 @@ import Sidebar from "../components/Sidebar";
 import { Threads } from "../components/thread";
 import Write from "../components/Write";
 import jwt_decode from "jwt-decode";
+import { Authentication } from "../components/authentication/Authentication";
 
 export interface Decoded {
   userid: number;
@@ -41,20 +42,21 @@ const Home = () => {
   const [rows, setRows] = useState<number>(1);
   const [showThread, setShowThread] = useState<boolean>(false);
   const [ifPublishing, setIfPublishing] = useState<boolean>(false);
+  const [showRegister, setShowRegister] = useState<boolean>(false);
 
   useEffect(() => {
     // fetch all posts for the feed
-    const fetchData = async (jwt: string): Promise<void> => {
-      setUser(jwt_decode(jwt));
+    const fetchData = async (): Promise<void> => {
       const result: Post[] | undefined = await fetchPosts();
       result && setPosts(result);
     };
     const token: string | null = localStorage.getItem("jwt");
-    if (token === null) navigate("/");
-    else if (token) setJwt(token);
-
-    jwt && void fetchData(jwt);
-  }, [jwt, navigate]);
+    if (token) {
+      setJwt(token);
+      setUser(jwt_decode(token));
+    }
+    void fetchData();
+  }, [navigate]);
 
   const handleOptionClick = (e: MouseEvent<HTMLButtonElement>): void => {
     const elementId: string = e.currentTarget.id;
@@ -90,22 +92,26 @@ const Home = () => {
 
   const publish = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setIfPublishing(true);
-    const result: Post | undefined = await publishPost(
-      selectedFiles,
-      draftContent,
-      thread
-    );
-    if (result) {
-      setIsWriting(false);
-      setIfPublishing(false);
-      setRows(1);
-      if (result.thread === null) {
-        setPosts((prevPosts) => [result, ...prevPosts]);
+    if (jwt) {
+      setIfPublishing(true);
+      const result: Post | undefined = await publishPost(
+        selectedFiles,
+        draftContent,
+        thread
+      );
+      if (result) {
+        setIsWriting(false);
+        setIfPublishing(false);
+        setRows(1);
+        if (result.thread === null) {
+          setPosts((prevPosts) => [result, ...prevPosts]);
+        }
       }
+      setDraftContent("");
+      setSelectedFiles([]);
+    } else {
+      console.log("You are not logged in!");
     }
-    setDraftContent("");
-    setSelectedFiles([]);
   };
 
   const autoResizeTextRow = (e: React.FormEvent<HTMLTextAreaElement>) => {
@@ -114,17 +120,27 @@ const Home = () => {
     if (lines.length > 5) setRows(lines.length);
   };
 
+  if (showRegister) {
+    return <Authentication />;
+  }
+
   return (
-    <div className={`flex h-[100vh] justify-around`}>
-      {user && (
-        <Sidebar
-          options={options}
-          topics={topics}
-          user={user}
-          handleOptionClick={handleOptionClick}
+    <div className={`flex h-[100vh] justify-around w-full`}>
+      <Sidebar
+        options={options}
+        topics={topics}
+        user={user}
+        handleOptionClick={handleOptionClick}
+      />
+
+      {posts && (
+        <Feed
+          posts={posts}
+          handleWriting={handleWriting}
+          setShowRegister={setShowRegister}
+          jwt={jwt}
         />
       )}
-      {posts && <Feed posts={posts} handleWriting={handleWriting} />}
 
       <div className="threads w-[35%] flex flex-col items-center">
         <div className="post-form flex flex-col mt-8 mr-8 w-[80%]">
@@ -151,10 +167,18 @@ const Home = () => {
               handleFileSelection={handleFileSelection}
               setIsWriting={setIsWriting}
               setRows={setRows}
+              setShowRegister={setShowRegister}
+              jwt={jwt}
             />
           )}
         </div>
-        {showThread && thread && <Threads postId={thread} />}
+        {showThread && thread && (
+          <Threads
+            postId={thread}
+            jwt={jwt}
+            setShowRegister={setShowRegister}
+          />
+        )}
       </div>
     </div>
   );
