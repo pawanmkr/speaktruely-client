@@ -12,6 +12,9 @@ export const handleSidebarOptions = (
       localStorage.removeItem("jwt");
       window.location.reload();
       break;
+    case "profile":
+      navigate("/profile");
+      break;
     default:
       break;
   }
