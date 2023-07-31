@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
-import { fetchImages, getVoteState } from "../../utils/index";
-import { Post, PostOptionProps, PostcardProps } from "../../interface";
+import { fetchBlobs, getVoteState } from "../../utils/index";
+import {
+  Post,
+  PostOptionProps,
+  PostcardProps,
+  DownloadedBlob,
+} from "../../interface";
 import { PostContent, PostOptions, Comments } from ".";
 import { Loading } from "../animations";
 
@@ -14,7 +19,7 @@ export const PostCard = ({
   const [currentReputation, setCurrentReputation] = useState<number>(0);
   const [voteType, setVoteType] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [images, setImages] = useState<string[]>([]);
+  const [files, setFiles] = useState<DownloadedBlob[]>([]);
   const [lines, setLines] = useState<string[]>([]);
   const [showComments, setShowComments] = useState<boolean>(false);
 
@@ -25,8 +30,8 @@ export const PostCard = ({
         setPost(postDetails);
         setCurrentReputation(reputation);
         if (media) {
-          const images: string[] | undefined = await fetchImages(media);
-          images && setImages(images);
+          const files: DownloadedBlob[] | undefined = await fetchBlobs(media);
+          files && setFiles(files);
         }
         if (jwt) {
           const type: number | undefined = await getVoteState(id);
@@ -63,7 +68,7 @@ export const PostCard = ({
 
   return postOptionProps ? (
     <div className="border-4 w-[70%] bg-gray-200 mb-8 rounded">
-      {images && lines && <PostContent lines={lines} images={images} />}
+      {files.length > 0 && lines && <PostContent lines={lines} files={files} />}
       <div className="reputation-bar h-2 bg-red-300"></div>
       <PostOptions
         {...postOptionProps}

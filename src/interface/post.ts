@@ -10,7 +10,12 @@ export type Post = {
   username: string;
   threads: number;
   created_at: string;
-  media?: string[];
+  media?: [
+    {
+      name: string;
+      mimetype: string;
+    }
+  ];
   comments?: {
     comment: string;
     createdAt: string;
@@ -59,7 +64,7 @@ export interface PostOptionProps {
 
 export interface PostContentProps {
   lines: string[];
-  images: string[];
+  files: DownloadedBlob[];
 }
 
 export interface Comment {
@@ -68,4 +73,9 @@ export interface Comment {
   date: string;
   userid: number;
   username: string;
+}
+
+export interface DownloadedBlob {
+  url: string;
+  mimetype: string;
 }

@@ -1,6 +1,10 @@
-import { ThreadOptionProps, Post as ThreadInterface } from "../../interface";
+import {
+  ThreadOptionProps,
+  Post as ThreadInterface,
+  DownloadedBlob,
+} from "../../interface";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { fetchImages } from "../../utils/media";
+import { fetchBlobs } from "../../utils/media";
 import { getVoteState } from "../../utils";
 import { Loading } from "../animations";
 import { Comments, PostContent } from "../post";
@@ -15,19 +19,21 @@ export const Thread = ({
   jwt: string;
   setShowRegister: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const [currentReputation, setCurrentReputation] = useState<number>(0);
-  const [voteType, setVoteType] = useState<number>(0);
+  const [currentReputation, setCurrentReputation] = useState(0);
+  const [voteType, setVoteType] = useState(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [images, setImages] = useState<string[]>([]);
+  const [files, setFiles] = useState<DownloadedBlob[]>([]);
   const [lines, setLines] = useState<string[]>([]);
-  const [showComments, setShowComments] = useState<boolean>(false);
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
     const fetchData = async (thread: ThreadInterface) => {
       setCurrentReputation(thread.reputation);
       if (thread.media) {
-        const result: string[] | undefined = await fetchImages(thread.media);
-        result && setImages(result);
+        const result: DownloadedBlob[] | undefined = await fetchBlobs(
+          thread.media
+        );
+        result && setFiles(result);
       }
       if (jwt) {
         const state: number | undefined = await getVoteState(thread.id);
@@ -60,7 +66,7 @@ export const Thread = ({
 
   return isLoading === false ? (
     <div className="border-4 w-full bg-gray-200 mb-8 rounded">
-      {images && lines && <PostContent lines={lines} images={images} />}
+      {files && lines && <PostContent lines={lines} files={files} />}
       <div className="reputation-bar h-2 bg-red-300"></div>
       <ThreadOptions {...threadOptionProps} setShowRegister={setShowRegister} />
       {showComments && (

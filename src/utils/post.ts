@@ -44,6 +44,14 @@ export const publishPost = async (
       `${import.meta.env.VITE_API_V1_URL as string}/post`,
       formData,
       {
+        onUploadProgress(progressEvent) {
+          if (progressEvent.total && progressEvent.progress) {
+            const percentage: number = Math.round(
+              (progressEvent.progress / progressEvent.total) * 100
+            );
+            console.log(percentage);
+          }
+        },
         headers: {
           "Content-Type": "multipar/form-data",
           Authorization: `Bearer ${jwt}`,

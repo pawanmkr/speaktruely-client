@@ -1,11 +1,11 @@
 import React from "react";
-import { PostContentProps } from "../../interface";
+import { DownloadedBlob, PostContentProps } from "../../interface";
 import { nanoid } from "nanoid";
 
-export const PostContent = ({ lines, images }: PostContentProps) => {
+export const PostContent = ({ lines, files }: PostContentProps) => {
   return (
     <div className="">
-      <Image images={images} />
+      <Files files={files} />
       <Text lines={lines} />
     </div>
   );
@@ -26,11 +26,25 @@ const Text = ({ lines }: { lines: string[] }) => {
   );
 };
 
-const Image = ({ images }: { images: string[] }) => {
+const Files = ({ files }: { files: DownloadedBlob[] }) => {
   return (
     <div className="">
-      {images.map((image) => {
-        return <img key={image} src={image} className="max-w-full rounded-t" />;
+      {files.map((file) => {
+        return file.mimetype.includes("video") ? (
+          <video
+            controls
+            key={file.url}
+            src={file.url}
+            className="max-w-full rounded-t"
+          />
+        ) : (
+          <img
+            key={file.url}
+            src={file.url}
+            alt="404"
+            className="max-w-full rounded-t"
+          />
+        );
       })}
     </div>
   );

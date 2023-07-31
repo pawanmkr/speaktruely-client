@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { DownloadedBlob, Post } from "../interface";
 
 export const downloadBlob = async (blobName: string) => {
   try {
@@ -21,15 +22,19 @@ export const downloadBlob = async (blobName: string) => {
   }
 };
 
-export const fetchImages = async (
-  media: string[]
-): Promise<string[] | undefined> => {
-  const fetchedImages: string[] = [];
-  for (const filename of media) {
-    const url: string | undefined = await downloadBlob(filename);
+export const fetchBlobs = async (
+  media: Post["media"]
+): Promise<DownloadedBlob[] | undefined> => {
+  if (media === undefined) return;
+  const fetchedBlobs = [];
+  for (const file of media) {
+    const url: string | undefined = await downloadBlob(file.name);
     if (url) {
-      fetchedImages.push(url);
+      fetchedBlobs.push({
+        url: url,
+        mimetype: file.mimetype,
+      });
     }
   }
-  return fetchedImages;
+  return fetchedBlobs;
 };

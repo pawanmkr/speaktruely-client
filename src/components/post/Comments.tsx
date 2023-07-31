@@ -29,10 +29,7 @@ const CommentForm = ({
 }) => {
   const [comment, setComment] = useState<string>("");
 
-  const handleCommentSubmit = async (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    e.preventDefault();
+  const handleCommentSubmit = async () => {
     const res: CommentInterface | undefined = await postComment(
       comment,
       postId
@@ -55,7 +52,7 @@ const CommentForm = ({
       <div className="w-[15%] flex items-center justify-center bg-white text-xl">
         <button
           onClick={() => {
-            jwt ? handleCommentSubmit : setShowRegister(true);
+            jwt ? void handleCommentSubmit() : setShowRegister(true);
           }}
         >
           Post
