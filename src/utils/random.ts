@@ -10,7 +10,7 @@ export const handleSidebarOptions = (
   switch (elementId) {
     case "logout":
       localStorage.removeItem("jwt");
-      navigate("/");
+      window.location.reload();
       break;
     default:
       break;

@@ -49,6 +49,7 @@ export const publishPost = async (
             const percentage: number = Math.round(
               (progressEvent.progress / progressEvent.total) * 100
             );
+            console.log(progressEvent.progress);
             console.log(percentage);
           }
         },
@@ -59,6 +60,29 @@ export const publishPost = async (
       }
     );
     return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deletePost = async (
+  postId: number
+): Promise<number | undefined> => {
+  if (!jwt) throw new Error("Jwt not found");
+  try {
+    const res: AxiosResponse = await axios.delete(
+      `${import.meta.env.VITE_API_V1_URL as string}/post`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+        params: {
+          post_id: postId,
+        },
+      }
+    );
+    return res.status;
   } catch (error) {
     console.log(error);
   }

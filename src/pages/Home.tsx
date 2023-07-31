@@ -12,6 +12,7 @@ import { Threads } from "../components/thread";
 import Write from "../components/Write";
 import jwt_decode from "jwt-decode";
 import { Authentication } from "../components/authentication/Authentication";
+import { FollowSuggestions } from "../components/Friends";
 
 export interface Decoded {
   userid: number;
@@ -125,7 +126,7 @@ const Home = () => {
   }
 
   return (
-    <div className={`flex h-[100vh] justify-around w-full`}>
+    <div className={`flex h-[100vh] justify-around w-full bg-slate`}>
       <Sidebar
         options={options}
         topics={topics}
@@ -136,6 +137,7 @@ const Home = () => {
       {posts && (
         <Feed
           posts={posts}
+          setPosts={setPosts}
           handleWriting={handleWriting}
           setShowRegister={setShowRegister}
           jwt={jwt}
@@ -153,7 +155,7 @@ const Home = () => {
               rows={rows}
               onInput={autoResizeTextRow}
               onFocus={() => handleWriting(0)}
-              placeholder="Write..."
+              placeholder="Any Thoughts?"
               maxLength={300}
               value={draftContent}
               onChange={handleContentChange}
@@ -172,12 +174,14 @@ const Home = () => {
             />
           )}
         </div>
-        {showThread && thread && (
+        {showThread && thread ? (
           <Threads
             postId={thread}
             jwt={jwt}
             setShowRegister={setShowRegister}
           />
+        ) : (
+          user && <FollowSuggestions userId={user?.userid} />
         )}
       </div>
     </div>

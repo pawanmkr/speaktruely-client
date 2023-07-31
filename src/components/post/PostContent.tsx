@@ -5,7 +5,9 @@ import { nanoid } from "nanoid";
 export const PostContent = ({ lines, files }: PostContentProps) => {
   return (
     <div className="">
-      <Files files={files} />
+      <div className="bg-black rounded-t flex justify-center overflow-hidden">
+        <Files files={files} />
+      </div>
       <Text lines={lines} />
     </div>
   );
@@ -35,15 +37,10 @@ const Files = ({ files }: { files: DownloadedBlob[] }) => {
             controls
             key={file.url}
             src={file.url}
-            className="max-w-full rounded-t"
+            className="max-h-[480px]"
           />
         ) : (
-          <img
-            key={file.url}
-            src={file.url}
-            alt="404"
-            className="max-w-full rounded-t"
-          />
+          <img key={file.url} src={file.url} alt="404" />
         );
       })}
     </div>

@@ -14,6 +14,7 @@ export const PostCard = ({
   handleCreateThread,
   setShowRegister,
   jwt,
+  setPosts,
 }: PostcardProps) => {
   const [post, setPost] = useState<Post>(postDetails);
   const [currentReputation, setCurrentReputation] = useState<number>(0);
@@ -60,6 +61,7 @@ export const PostCard = ({
     handleCreateThread,
     setShowRegister,
     jwt,
+    setPosts,
   };
 
   if (isLoading) {
@@ -67,13 +69,14 @@ export const PostCard = ({
   }
 
   return postOptionProps ? (
-    <div className="border-4 w-[70%] bg-gray-200 mb-8 rounded">
+    <div className="border-4 w-[70%] bg-xlite border-xlite mb-8 rounded text-sublime_yite">
       {files.length > 0 && lines && <PostContent lines={lines} files={files} />}
       <div className="reputation-bar h-2 bg-red-300"></div>
       <PostOptions
         {...postOptionProps}
         setShowRegister={setShowRegister}
         jwt={jwt}
+        setPosts={setPosts}
       />
       {showComments && (
         <Comments

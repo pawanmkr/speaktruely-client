@@ -1,5 +1,7 @@
 import axios, { AxiosResponse } from "axios";
-import { UserForm } from "../interface";
+import { FollowSuggestion, UserForm } from "../interface";
+
+const jwt: string | null = localStorage.getItem("jwt");
 
 export const userRegistrationAndLogin = async (
   formData: UserForm
@@ -38,4 +40,82 @@ export const userRegistrationAndLogin = async (
     }
   }
   return 0;
+};
+
+export const fetchFollowSuggestions = async (
+  userId: number
+): Promise<FollowSuggestion[] | undefined> => {
+  if (!jwt) throw new Error("Jwt not found");
+  try {
+    const res: AxiosResponse<FollowSuggestion[]> = await axios.get(
+      `${import.meta.env.VITE_API_V1_URL as string}/suggestions/follow`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+        params: {
+          user_id: userId,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const fetchProfile = async (userId: number): Promise<void> => {
+  if (!jwt) throw new Error("Jwt not found");
+  try {
+    await axios.get(
+      `${import.meta.env.VITE_API_V1_URL as string}/suggestions/follow`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        params: {
+          user_id: userId,
+        },
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const followUser = async (followingId: number): Promise<void> => {
+  try {
+    if (!jwt) throw new Error("Jwt not found");
+    await axios.post(
+      `${import.meta.env.VITE_API_V1_URL as string}/user/follow`,
+      { following_id: followingId },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const unfollowUser = async (followingId: number): Promise<void> => {
+  if (!jwt) throw new Error("Jwt not found");
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_V1_URL as string}/user/unfollow`,
+      { following_id: followingId },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
 };

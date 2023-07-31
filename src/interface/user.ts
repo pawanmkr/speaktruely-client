@@ -13,3 +13,9 @@ export interface UserForm {
   lostemail: FormDataEntryValue | null;
   password: FormDataEntryValue | null;
 }
+
+export interface FollowSuggestion {
+  id: number;
+  full_name: string;
+  username: string;
+}

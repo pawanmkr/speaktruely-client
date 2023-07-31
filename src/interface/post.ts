@@ -5,7 +5,7 @@ export type Post = {
   thread?: number;
   content: string;
   reputation: number;
-  userid: number;
+  user_id: number;
   full_name: string;
   username: string;
   threads: number;
@@ -25,6 +25,7 @@ export type Post = {
 
 export interface PostProps {
   posts: Post[];
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
   handleWriting: (threads: number, postId?: number) => void;
   jwt: string;
   setShowRegister: Dispatch<SetStateAction<boolean>>;
@@ -35,6 +36,7 @@ export interface PostcardProps {
   handleCreateThread: (threads: number, postId?: number) => void;
   jwt: string;
   setShowRegister: Dispatch<SetStateAction<boolean>>;
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
 }
 
 export interface ThreadOptionProps {
@@ -59,6 +61,14 @@ export interface PostOptionProps {
   setShowComments: React.Dispatch<React.SetStateAction<boolean>>;
   handleCreateThread: (threads: number, postId?: number) => void;
   setShowRegister: Dispatch<SetStateAction<boolean>>;
+  jwt: string;
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+}
+
+export interface PostMoreOptionProps {
+  id: number;
+  userId: number;
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
   jwt: string;
 }
 

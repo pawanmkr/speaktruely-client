@@ -1,7 +1,13 @@
 import { PostProps } from "../interface";
 import { PostCard } from "./post";
 
-const Feed = ({ posts, handleWriting, setShowRegister, jwt }: PostProps) => {
+const Feed = ({
+  posts,
+  handleWriting,
+  setShowRegister,
+  jwt,
+  setPosts,
+}: PostProps) => {
   if (!posts) {
     return null;
   }
@@ -18,6 +24,7 @@ const Feed = ({ posts, handleWriting, setShowRegister, jwt }: PostProps) => {
             }}
             setShowRegister={setShowRegister}
             jwt={jwt}
+            setPosts={setPosts}
           />
         );
       })}
