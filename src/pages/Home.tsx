@@ -1,10 +1,7 @@
-import { useEffect, useState, MouseEvent } from "react";
-import { FaHome, FaWpexplorer } from "react-icons/fa";
-import { CgProfile } from "react-icons/cg";
-import { BiLogOutCircle } from "react-icons/bi";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Post } from "../interface";
-import { publishPost, handleSidebarOptions, fetchPosts } from "../utils";
+import { publishPost, fetchPosts, topics } from "../utils";
 import { IoMdCreate } from "react-icons/io";
 import Feed from "../components/Feed";
 import Sidebar from "../components/Sidebar";
@@ -21,15 +18,6 @@ export interface Decoded {
   username: string;
   iat: number;
 }
-
-const options: object = {
-  Home: <FaHome />,
-  Explore: <FaWpexplorer />,
-  Profile: <CgProfile />,
-  Logout: <BiLogOutCircle />,
-};
-
-const topics: string[] = ["Classroom", "Events", "Cricket", "Hip-Hop"];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -58,11 +46,6 @@ const Home = () => {
     }
     void fetchData();
   }, [navigate]);
-
-  const handleOptionClick = (e: MouseEvent<HTMLButtonElement>): void => {
-    const elementId: string = e.currentTarget.id;
-    handleSidebarOptions(elementId, navigate);
-  };
 
   const handleWriting = (threads: number, postId?: number) => {
     if (!threads) {
@@ -126,22 +109,19 @@ const Home = () => {
   }
 
   return (
-    <div className={`flex h-[100vh] justify-around w-full bg-slate`}>
-      <Sidebar
-        options={options}
-        topics={topics}
-        user={user}
-        handleOptionClick={handleOptionClick}
-      />
+    <div className={`flex h-[100vh] justify-around w-full`}>
+      <Sidebar topics={topics} user={user} />
 
       {posts && (
-        <Feed
-          posts={posts}
-          setPosts={setPosts}
-          handleWriting={handleWriting}
-          setShowRegister={setShowRegister}
-          jwt={jwt}
-        />
+        <div className="w-[50%] border-x-[1px] border-xlite overflow-auto scrollbar-hide pt-4">
+          <Feed
+            posts={posts}
+            setPosts={setPosts}
+            handleWriting={handleWriting}
+            setShowRegister={setShowRegister}
+            jwt={jwt}
+          />
+        </div>
       )}
 
       <div className="threads w-[35%] flex flex-col items-center">

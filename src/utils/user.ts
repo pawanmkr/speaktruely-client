@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { FollowSuggestion, UserForm } from "../interface";
+import { FollowSuggestion, UserProfile, UserForm } from "../interface";
 
 const jwt: string | null = localStorage.getItem("jwt");
 
@@ -65,20 +65,45 @@ export const fetchFollowSuggestions = async (
   }
 };
 
-export const fetchProfile = async (userId: number): Promise<void> => {
-  if (!jwt) throw new Error("Jwt not found");
+export const fetchProfile = async (
+  username: string
+): Promise<UserProfile | undefined> => {
   try {
-    await axios.get(
-      `${import.meta.env.VITE_API_V1_URL as string}/suggestions/follow`,
+    const res: AxiosResponse<UserProfile> = await axios.get(
+      `${import.meta.env.VITE_API_V1_URL as string}/profile`,
       {
         headers: {
           "Content-Type": "application/json",
         },
         params: {
-          user_id: userId,
+          username: username,
         },
       }
     );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const checkIfFollowingTheUser = async (
+  id: number
+): Promise<boolean | undefined> => {
+  try {
+    if (!jwt) throw new Error("Jwt not found");
+    const res: AxiosResponse<{ following: boolean }> = await axios.get(
+      `${import.meta.env.VITE_API_V1_URL as string}/user/follow/state`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+        params: {
+          user_id: id,
+        },
+      }
+    );
+    return res.data.following;
   } catch (error) {
     console.log(error);
   }

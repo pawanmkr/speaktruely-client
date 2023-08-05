@@ -12,6 +12,7 @@ import { deletePost, updatePostVoteStatus } from "../../utils";
 import { Decoded, PostOptionProps, PostMoreOptionProps } from "../../interface";
 import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 export const PostOptions = ({
   post,
@@ -26,6 +27,7 @@ export const PostOptions = ({
   jwt,
   setPosts,
 }: PostOptionProps) => {
+  const navigate = useNavigate();
   const [showOptions, setShowOptions] = useState(false);
   const handleVote = async (type: number) => {
     jwt
@@ -46,7 +48,10 @@ export const PostOptions = ({
 
   return (
     <div className="flex items-center justify-between p-2 text-xl realtive">
-      <div className="flex items-center w-[60%]">
+      <div
+        className="flex items-center w-[60%] cursor-pointer"
+        onClick={() => navigate(`/profile/${post.username}`)}
+      >
         <p className="text-lg">{post.full_name}</p>
         {/* <p className="text-sm ml-2 cursor-pointer">@{post.username}</p> */}
       </div>

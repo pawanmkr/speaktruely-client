@@ -42,9 +42,6 @@ export const FollowSuggestions = ({ userId }: { userId: number }) => {
 const Suggestion = ({ id, full_name, username }: FollowSuggestion) => {
   const navigate = useNavigate();
   const [following, setFollowing] = useState(false);
-  const handleFetchProfile = async (id: number) => {
-    //await fetchProfile(id);
-  };
   return (
     <div className="flex justify-between items-center w-full rounded p-2">
       <div

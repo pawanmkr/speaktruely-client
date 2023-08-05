@@ -19,3 +19,11 @@ export interface FollowSuggestion {
   full_name: string;
   username: string;
 }
+
+export interface UserProfile {
+  id: number;
+  full_name: string;
+  username: string;
+  followers_count: number;
+  following_count: number;
+}

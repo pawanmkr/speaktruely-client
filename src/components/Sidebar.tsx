@@ -1,28 +1,30 @@
+import { SidebarProps } from "../interface";
+import { FaHome, FaWpexplorer } from "react-icons/fa";
+import { CgProfile } from "react-icons/cg";
+import { BiLogOutCircle } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 import { MouseEvent } from "react";
-import { Decoded } from "../pages/Home";
+import { handleSidebarOptions } from "../utils";
 
-type SidebarProps = {
-  options: object;
-  topics: string[];
-  user: Decoded | undefined;
-  handleOptionClick: (event: MouseEvent<HTMLButtonElement>) => void;
+const options: object = {
+  Home: <FaHome />,
+  Explore: <FaWpexplorer />,
+  Profile: <CgProfile />,
+  Logout: <BiLogOutCircle />,
 };
 
-const Sidebar = ({
-  options,
-  topics,
-  user,
-  handleOptionClick,
-}: SidebarProps) => {
+const Sidebar = ({ topics, user }: SidebarProps) => {
+  const navigate = useNavigate();
+  const handleOptionClick = (e: MouseEvent<HTMLButtonElement>): void => {
+    const elementId: string = e.currentTarget.id;
+    user && handleSidebarOptions(elementId, navigate, user);
+  };
   return (
-    <div className="ml-4 my-2 w-[15%] text-sublime_yite overflow-hidden flex flex-col items-center">
-      <div className="ml-4 my-4 mb-8">
-        <p className="text-2xl">{user ? user.fullname : "Pawan Kumar"}</p>
-        <p>@{user ? user.username : "stranger"}</p>
-      </div>
+    <div className="w-[20%] text-sublime_yite overflow-hidden flex flex-col items-center mt-6">
       <div className="menu mb-6 flex flex-col text-2xl">
         {Object.entries(options).map(([key, value]) => {
-          if ((!user && key === "Logout") || key === "Profile") return null;
+          if ((!user && key === "Logout") || (!user && key === "Profile"))
+            return null;
           else {
             return (
               <button

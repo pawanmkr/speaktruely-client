@@ -23,10 +23,10 @@ export type Post = {
   share?: string;
 };
 
-export interface PostProps {
+export interface FeedProps {
   posts: Post[];
   setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
-  handleWriting: (threads: number, postId?: number) => void;
+  handleWriting?: (threads: number, postId?: number) => void;
   jwt: string;
   setShowRegister: Dispatch<SetStateAction<boolean>>;
 }

@@ -20,6 +20,27 @@ const Write = ({
   setShowRegister,
   jwt,
 }: WriteProps) => {
+  const MAX_FILE_SIZE_MB = 50;
+
+  const handleFileSelectionWithLimit = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    // Assuming only one file is allowed to be selected, change this if you allow multiple files.
+    const file = files[0];
+
+    const fileSizeMB = file.size / (1024 * 1024); // Convert bytes to MB
+
+    if (fileSizeMB <= MAX_FILE_SIZE_MB) {
+      handleFileSelection(e);
+    } else {
+      e.target.value = "";
+      alert(`File size exceeds the limit of ${MAX_FILE_SIZE_MB}MB.`);
+    }
+  };
+
   return (
     <form className="flex flex-col ml-4 w-full">
       <div className="flex items-center justify-between">
@@ -29,7 +50,7 @@ const Write = ({
           type="file"
           multiple
           accept="image/*, video/*"
-          onChange={handleFileSelection}
+          onChange={handleFileSelectionWithLimit}
         />
         <p
           className="cursor-pointer text-sublime_yite font-bold text-2xl mr-2"

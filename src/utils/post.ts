@@ -25,6 +25,27 @@ export const fetchPosts = async (): Promise<Post[] | undefined> => {
   }
 };
 
+export const fetchProfilePosts = async (
+  userId: number
+): Promise<Post[] | undefined> => {
+  try {
+    const response: AxiosResponse<Post[] | undefined> = await axios.get(
+      `${import.meta.env.VITE_API_V1_URL as string}/profile/post`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        params: {
+          user_id: userId,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching posts for user", error);
+  }
+};
+
 export const publishPost = async (
   selectedFiles: File[],
   draftContent: string,
