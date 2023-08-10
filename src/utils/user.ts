@@ -8,16 +8,19 @@ export const userRegistrationAndLogin = async (
 ): Promise<string | number> => {
   if (formData.emailorusername && formData.password) {
     // Login
-    const res = await axios.post(
+    const res: AxiosResponse<string> = await axios.post(
       `${import.meta.env.VITE_API_V1_URL as string}/user/login`,
       {
         email_or_username: formData.emailorusername,
         password: formData.password,
       }
     );
-    if (res && res.status === 404) {
-      console.log("User does not exists");
-      return res.status;
+    if (res) {
+      if (res.status === 404) {
+        console.log("User does not Exists");
+        return res.status;
+      }
+      return res.data;
     }
   } else {
     // Register

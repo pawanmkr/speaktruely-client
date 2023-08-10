@@ -5,10 +5,10 @@ import { nanoid } from "nanoid";
 export const PostContent = ({ lines, files }: PostContentProps) => {
   return (
     <div className="">
-      <div className="bg-black rounded-t flex justify-center overflow-hidden">
+      <Text lines={lines} />
+      <div className="bg-black flex justify-center overflow-hidden">
         <Files files={files} />
       </div>
-      <Text lines={lines} />
     </div>
   );
 };

@@ -69,22 +69,26 @@ export const PostCard = ({
   }
 
   return postOptionProps ? (
-    <div className="border-4 w-[70%] bg-xlite border-xlite mb-8 rounded text-sublime_yite">
-      {files.length > 0 && lines && <PostContent lines={lines} files={files} />}
-      <div className="reputation-bar h-2 bg-red-300"></div>
-      <PostOptions
-        {...postOptionProps}
-        setShowRegister={setShowRegister}
-        jwt={jwt}
-        setPosts={setPosts}
-      />
-      {showComments && (
-        <Comments
-          postId={post.id}
+    <div className="w-full text-sublime_yite px-8 border-y-[1px] border-y-xlite mb-8">
+      <div className="border-x-[1px] border-x-xlite">
+        {files.length > 0 && lines && (
+          <PostContent lines={lines} files={files} />
+        )}
+        <div className="reputation-bar h-2 bg-red-300"></div>
+        <PostOptions
+          {...postOptionProps}
           setShowRegister={setShowRegister}
           jwt={jwt}
+          setPosts={setPosts}
         />
-      )}
+        {showComments && (
+          <Comments
+            postId={post.id}
+            setShowRegister={setShowRegister}
+            jwt={jwt}
+          />
+        )}
+      </div>
     </div>
   ) : (
     <Loading />

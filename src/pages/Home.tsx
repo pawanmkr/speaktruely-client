@@ -113,7 +113,7 @@ const Home = () => {
       <Sidebar topics={topics} user={user} />
 
       {posts && (
-        <div className="w-[50%] border-x-[1px] border-xlite overflow-auto scrollbar-hide pt-4">
+        <div className="w-[50%] border-x-[1px] border-xlite overflow-y-scroll scrollbar-hide">
           <Feed
             posts={posts}
             setPosts={setPosts}
