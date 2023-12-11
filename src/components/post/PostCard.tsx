@@ -71,9 +71,7 @@ export const PostCard = ({
   return postOptionProps ? (
     <div className="w-full text-sublime_yite px-8 border-y-[1px] border-y-xlite mb-8">
       <div className="border-x-[1px] border-x-xlite">
-        {files.length > 0 && lines && (
-          <PostContent lines={lines} files={files} />
-        )}
+        <PostContent lines={lines} files={files} />
         <div className="reputation-bar h-2 bg-red-300"></div>
         <PostOptions
           {...postOptionProps}

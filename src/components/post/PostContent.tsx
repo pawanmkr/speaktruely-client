@@ -6,9 +6,11 @@ export const PostContent = ({ lines, files }: PostContentProps) => {
   return (
     <div className="">
       <Text lines={lines} />
-      <div className="bg-black flex justify-center overflow-hidden">
-        <Files files={files} />
-      </div>
+      {files && (
+        <div className="bg-black flex justify-center overflow-hidden">
+          <Files files={files} />
+        </div>
+      )}
     </div>
   );
 };
